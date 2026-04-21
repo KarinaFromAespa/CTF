@@ -1,0 +1,37 @@
+ubuntu@nepthunder:~$ # Probe the challenge server with custom panel name
+NOTE_ID="e6007144403f17fbf9b4c96a2450f815fe660d12827e5c92c63ebc92da6e898f"
+SESSION="804576bc8115ce7477895a776ca331f0"
+
+echo "=== Known panels ==="
+for panel in summary compact print; do
+  echo -n "[$panel] "
+  curl -s "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json" 2>/dev/null | head -c 200
+  echo
+done
+
+echo "=== Custom panels ==="
+for panel in reader custom full embed share view; do
+  echo -n "[$panel] "
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json")
+  BODY=$(curl -s "https://challenge-0426.intigriti.io/note/$NOTE_ID/$panel/manifest.json?note=$NOTE_ID" \
+    -H "Cookie: northstar_profile=$SESSION" \
+    -H "Accept: application/json" | head -c 300)
+  echo "HTTP $STATUS: $BODY"
+done
+=== Known panels ===
+[summary] {"profile":{"renderMode":"safe","widgetTypes":["counter","progress"],"widgetSink":"text"}}
+[compact] {"profile":{"renderMode":"safe","widgetTypes":[],"widgetSink":"text"}}
+[print] {"profile":{"renderMode":"safe","widgetTypes":["counter"],"widgetSink":"text","theme":"light"}}
+=== Custom panels ===
+[reader] HTTP 404: {"error":"Unknown panel"}
+[custom] HTTP 404: {"error":"Unknown panel"}
+[full] HTTP 404: {"error":"Unknown panel"}
+[embed] HTTP 404: {"error":"Unknown panel"}
+[share] HTTP 404: {"error":"Unknown panel"}
+[view] HTTP 404: {"error":"Unknown panel"}
+
+
